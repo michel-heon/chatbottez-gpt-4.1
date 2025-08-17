@@ -1,0 +1,204 @@
+<!--
+    Microsoft Azure API Management Policy for Quota Enforcement
+    This policy enforces the 300 questions per month quota for SaaS subscriptions
+-->
+<policies>
+    <inbound>
+        <base />
+        
+        <!-- Set variables for quota management -->
+        <set-variable name="subscription-id" value="@(context.Subscription.Id)" />
+        <set-variable name="quota-limit" value="300" />
+        <set-variable name="renewal-period" value="month" />
+        
+        <!-- Apply quota by subscription key -->
+        <quota-by-key 
+            calls="300" 
+            renewal-period="month"
+            counter-key="@(context.Subscription.Id)"
+            increment-condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)" />
+        
+        <!-- Set headers for downstream processing -->
+        <set-header name="x-apim-subscription-id" exists-action="override">
+            <value>@(context.Subscription.Id)</value>
+        </set-header>
+        
+        <set-header name="x-quota-limit" exists-action="override">
+            <value>300</value>
+        </set-header>
+        
+        <!-- Extract quota remaining from APIM -->
+        <set-variable name="quota-counter" value="@{
+            var counter = context.Variables.GetValueOrDefault<int>(&quot;quota-counter&quot;, 0);
+            return counter;
+        }" />
+        
+        <!-- Log the request for audit purposes -->
+        <log-to-eventhub logger-id="quota-audit-logger">
+            @{
+                return new JObject(
+                    new JProperty("timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")),
+                    new JProperty("subscription-id", context.Subscription.Id),
+                    new JProperty("request-id", context.RequestId),
+                    new JProperty("method", context.Request.Method),
+                    new JProperty("url", context.Request.Url.ToString()),
+                    new JProperty("ip", context.Request.IpAddress),
+                    new JProperty("user-agent", context.Request.Headers.GetValueOrDefault("User-Agent", "unknown"))
+                ).ToString();
+            }
+        </log-to-eventhub>
+        
+        <!-- Rate limiting (additional protection) -->
+        <rate-limit-by-key 
+            calls="60" 
+            renewal-period="60" 
+            counter-key="@(context.Subscription.Id + &quot;-rate&quot;)" />
+        
+    </inbound>
+    
+    <backend>
+        <base />
+    </backend>
+    
+    <outbound>
+        <base />
+        
+        <!-- Set quota information in response headers -->
+        <set-header name="x-quota-remaining" exists-action="override">
+            <value>@{
+                var quotaLimit = 300;
+                var quotaCounter = context.Variables.GetValueOrDefault<int>("quota-counter", 0);
+                return (quotaLimit - quotaCounter).ToString();
+            }</value>
+        </set-header>
+        
+        <set-header name="x-quota-total" exists-action="override">
+            <value>300</value>
+        </set-header>
+        
+        <set-header name="x-quota-reset-date" exists-action="override">
+            <value>@{
+                var now = DateTime.UtcNow;
+                var firstDayNextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
+                return firstDayNextMonth.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            }</value>
+        </set-header>
+        
+        <!-- Add warning headers at thresholds -->
+        <choose>
+            <when condition="@{
+                var quotaLimit = 300;
+                var quotaCounter = context.Variables.GetValueOrDefault<int>(&quot;quota-counter&quot;, 0);
+                var usagePercentage = (double)quotaCounter / quotaLimit * 100;
+                return usagePercentage >= 90;
+            }">
+                <set-header name="x-quota-warning" exists-action="override">
+                    <value>critical</value>
+                </set-header>
+            </when>
+            <when condition="@{
+                var quotaLimit = 300;
+                var quotaCounter = context.Variables.GetValueOrDefault<int>(&quot;quota-counter&quot;, 0);
+                var usagePercentage = (double)quotaCounter / quotaLimit * 100;
+                return usagePercentage >= 80;
+            }">
+                <set-header name="x-quota-warning" exists-action="override">
+                    <value>high</value>
+                </set-header>
+            </when>
+        </choose>
+        
+        <!-- Log successful responses for billing -->
+        <choose>
+            <when condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)">
+                <log-to-eventhub logger-id="usage-billing-logger">
+                    @{
+                        return new JObject(
+                            new JProperty("timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")),
+                            new JProperty("subscription-id", context.Subscription.Id),
+                            new JProperty("request-id", context.RequestId),
+                            new JProperty("dimension", "question"),
+                            new JProperty("quantity", 1),
+                            new JProperty("status-code", context.Response.StatusCode)
+                        ).ToString();
+                    }
+                </log-to-eventhub>
+            </when>
+        </choose>
+        
+    </outbound>
+    
+    <on-error>
+        <base />
+        
+        <!-- Custom error handling for quota exceeded -->
+        <choose>
+            <when condition="@(context.LastError.Source == &quot;quota-by-key&quot;)">
+                <return-response>
+                    <set-status code="429" reason="Quota Exceeded" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-header name="x-quota-exceeded" exists-action="override">
+                        <value>true</value>
+                    </set-header>
+                    <set-header name="x-quota-reset-date" exists-action="override">
+                        <value>@{
+                            var now = DateTime.UtcNow;
+                            var firstDayNextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
+                            return firstDayNextMonth.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                        }</value>
+                    </set-header>
+                    <set-body>@{
+                        var now = DateTime.UtcNow;
+                        var firstDayNextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
+                        
+                        return new JObject(
+                            new JProperty("error", "Quota Exceeded"),
+                            new JProperty("message", "You have exceeded your monthly quota of 300 questions. Please upgrade your plan or wait for the quota to reset."),
+                            new JProperty("details", new JObject(
+                                new JProperty("quota_limit", 300),
+                                new JProperty("quota_remaining", 0),
+                                new JProperty("reset_date", firstDayNextMonth.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")),
+                                new JProperty("upgrade_url", "https://portal.azure.com/marketplace")
+                            ))
+                        ).ToString();
+                    }</set-body>
+                </return-response>
+            </when>
+            <when condition="@(context.LastError.Source == &quot;rate-limit-by-key&quot;)">
+                <return-response>
+                    <set-status code="429" reason="Too Many Requests" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-header name="Retry-After" exists-action="override">
+                        <value>60</value>
+                    </set-header>
+                    <set-body>@{
+                        return new JObject(
+                            new JProperty("error", "Rate Limit Exceeded"),
+                            new JProperty("message", "Too many requests. Please wait before making additional requests."),
+                            new JProperty("retry_after", 60)
+                        ).ToString();
+                    }</set-body>
+                </return-response>
+            </when>
+        </choose>
+        
+        <!-- Log errors -->
+        <log-to-eventhub logger-id="error-logger">
+            @{
+                return new JObject(
+                    new JProperty("timestamp", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")),
+                    new JProperty("subscription-id", context.Subscription.Id),
+                    new JProperty("request-id", context.RequestId),
+                    new JProperty("error-source", context.LastError.Source),
+                    new JProperty("error-reason", context.LastError.Reason),
+                    new JProperty("error-message", context.LastError.Message)
+                ).ToString();
+            }
+        </log-to-eventhub>
+        
+    </on-error>
+</policies>
