@@ -1,6 +1,28 @@
 # Guide d'installation PostgreSQL pour Windows
 
-## Option 1: Installation via l'installateur officiel (Recommandé)
+## 🚀 Option Recommandée: Azure PostgreSQL (Déployé)
+
+**Le système est maintenant configuré avec Azure PostgreSQL Flexible Server !**
+
+```bash
+# Tester la connexion à Azure PostgreSQL
+make test-db
+
+# Ou via npm
+npm run test:db
+```
+
+### Infrastructure déployée :
+- **Serveur** : PostgreSQL 16 dans Azure Canada Central
+- **Base de données** : `marketplace_quota` 
+- **Sécurité** : Intégration Azure Key Vault
+- **Utilisateur** : `marketplace_user` configuré automatiquement
+
+---
+
+## Option Alternative: Installation locale (Développement)
+
+### Option 1: Installation via l'installateur officiel
 
 1. **Télécharger PostgreSQL** :
    - Aller sur https://www.postgresql.org/download/windows/
@@ -12,28 +34,25 @@
    - Créer un mot de passe pour l'utilisateur `postgres`
    - Noter ce mot de passe !
 
-3. **Créer un utilisateur pour l'application** :
-   ```sql
-   -- Se connecter en tant que postgres
-   psql -U postgres
+3. **Configuration automatique** :
+   ```bash
+   # Utiliser le script de configuration automatique
+   ./scripts/database-setup.sh
    
-   -- Créer l'utilisateur
-   CREATE USER marketplace_user WITH PASSWORD 'votre-mot-de-passe-securise';
-   
-   -- Donner les permissions nécessaires
-   ALTER USER marketplace_user CREATEDB;
-   
-   -- Quitter
-   \q
+   # Ou via Makefile
+   make database
    ```
 
-4. **Mettre à jour .env.local** :
-   ```env
-   DB_PASSWORD=votre-mot-de-passe-securise
-   DATABASE_URL=postgresql://marketplace_user:votre-mot-de-passe-securise@localhost:5432/marketplace_quota
+4. **Tests** :
+   ```bash
+   # Tester la configuration
+   make test-db
+   
+   # Ou directement
+   npm run test:db
    ```
 
-## Option 2: Installation via Chocolatey
+### Option 2: Installation via Chocolatey
 
 Si vous avez Chocolatey installé :
 
@@ -44,8 +63,8 @@ choco install postgresql
 # Démarrer le service
 net start postgresql-x64-14
 
-# Configurer l'utilisateur
-psql -U postgres
+# Configuration automatique
+./scripts/database-setup.sh
 ```
 
 ## Option 3: Installation via Docker

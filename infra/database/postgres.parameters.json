@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "East US 2"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "appName": {
+      "value": "gpt-4-1"
+    },
+    "administratorLogin": {
+      "value": "pgadmin"
+    },
+    "administratorPassword": {
+      "value": "P@ssw0rd123!Strong"
+    },
+    "skuName": {
+      "value": "Standard_B1ms"
+    },
+    "postgresqlVersion": {
+      "value": "16"
+    },
+    "storageSizeGB": {
+      "value": 32
+    },
+    "storageAutoGrow": {
+      "value": true
+    },
+    "backupRetentionDays": {
+      "value": 7
+    },
+    "geoRedundantBackup": {
+      "value": false
+    },
+    "highAvailability": {
+      "value": false
+    },
+    "databaseName": {
+      "value": "marketplace_quota"
+    },
+    "appUserName": {
+      "value": "marketplace_user"
+    },
+    "appUserPassword": {
+      "value": "App@User123!Strong"
+    }
+  }
+}

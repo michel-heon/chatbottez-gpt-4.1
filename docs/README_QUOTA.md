@@ -4,15 +4,50 @@
 
 Ce projet implémente un système de quota complet pour les abonnements SaaS via le Microsoft Commercial Marketplace. Chaque utilisateur dispose de 300 questions par mois selon l'offre SaaS configurée.
 
+## 🚀 Déploiement Rapide
+
+### Avec Makefile (Recommandé)
+
+```bash
+# Déploiement complet avec infrastructure quota
+make all
+
+# Ou étape par étape
+make setup         # Configuration (environment + database + marketplace)
+make deploy        # Infrastructure Azure (APIM + PostgreSQL + Key Vault)
+make configure     # Configuration quota policies
+make validate      # Tests complets (15 validations)
+```
+
+### Validation de l'Infrastructure Quota
+
+```bash
+# Statut des composants quota
+make status
+
+# Tests spécifiques quota
+make test-config   # Configuration
+make test-db       # Base de données quota
+```
+
 ## Architecture
 
 ### Components Principaux
 
 1. **SaaS Fulfillment API** - Gestion du cycle de vie des abonnements
 2. **Metered Billing API** - Publication d'événements d'usage
-3. **Azure API Management (APIM)** - Enforcement du quota hard cap
+3. **Azure API Management (APIM)** - Enforcement du quota hard cap ✅ DÉPLOYÉ
 4. **Middleware Quota** - Validation et tracking de l'usage
-5. **Database Storage** - Persistance des abonnements et events
+5. **Database Storage** - Persistance des abonnements et events ✅ DÉPLOYÉ
+
+### Infrastructure Déployée
+
+```
+📦 rg-chatbottez-gpt-4-1-dev-02
+├── 🌐 API Management (APIM)          ✅ Quota policies configurées
+├── 🗄️  PostgreSQL Flexible Server    ✅ Schémas quota configurés
+└── 🔐 Key Vault                     ✅ Secrets management
+```
 
 ### Flux de Données
 
@@ -27,23 +62,23 @@ User Question → APIM (quota check) → Bot Endpoint → Middleware → AI Proc
 
 ## Configuration
 
-### Variables d'Environnement
+### Variables d'Environnement (Déployées via Makefile)
 
 ```env
-# Marketplace API
+# Marketplace API (configuré via make setup)
 MARKETPLACE_API_BASE=https://marketplaceapi.microsoft.com
 MARKETPLACE_API_KEY=your-api-key
 MARKETPLACE_SUBSCRIPTION_API_VERSION=2018-08-31
 MARKETPLACE_METERING_API_VERSION=2018-08-31
 
-# Quota Settings
+# Quota Settings (configuré via APIM policies)
 DIMENSION_NAME=question
 INCLUDED_QUOTA_PER_MONTH=300
 OVERAGE_ENABLED=false
 OVERAGE_PRICE_PER_QUESTION=0.01
 
-# Database
-DATABASE_URL=your-database-connection-string
+# Database (auto-configuré via make deploy)
+DATABASE_URL=postgresql://marketplace_user:***@gpt-4-1-postgres-dev-***.postgres.database.azure.com:5432/marketplace_quota?sslmode=require
 
 # Logging
 LOG_LEVEL=info

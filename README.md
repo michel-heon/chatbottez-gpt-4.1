@@ -13,7 +13,7 @@ This template now includes:
 - **Multi-tenant support** with tenant and user-level tracking
 - **Comprehensive audit logging**
 
-For detailed information about quota management, see [README_QUOTA.md](./README_QUOTA.md).
+For detailed information about quota management, see [README_QUOTA.md](./docs/README_QUOTA.md).
 
 ## Get started with the template
 
@@ -32,31 +32,69 @@ For detailed information about quota management, see [README_QUOTA.md](./README_
 
 1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
 1. In file *env/.env.playground.user*, fill in your Azure OpenAI key `SECRET_AZURE_OPENAI_API_KEY=<your-key>`, endpoint `AZURE_OPENAI_ENDPOINT=<your-endpoint>`, and deployment name `AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment>`.
+
+## 🚀 Déploiement avec Makefile (Recommandé)
+
+Le moyen le plus simple de déployer et configurer le système complet est d'utiliser le Makefile fourni :
+
+```bash
+# Afficher l'aide et les commandes disponibles
+make help
+
+# Déploiement complet (setup + deploy + configure + validate)
+make all
+
+# Ou étape par étape :
+make setup      # Configuration initiale (environnement + base de données + marketplace)
+make deploy     # Déploiement infrastructure Azure
+make configure  # Configuration post-déploiement
+make validate   # Validation complète du système
+
+# Commandes de développement
+make dev-setup  # Configuration rapide pour développement
+make test-config # Tester la configuration
+make status     # Afficher le statut du système
+```
+
+## 📋 Configuration Manuelle (Alternative)
+
+Si vous préférez configurer manuellement :
+
 1. **Environment Setup**: Run the environment configuration script:
    ```bash
-   # Windows PowerShell
-   .\scripts\Setup-Environment.ps1
-   
-   # Linux/Mac
-   ./scripts/configure-environment.sh
+   # Bash/WSL (Recommandé)
+   ./scripts/environment-setup.sh
    ```
    This will create `.env.local` with your Azure tenant ID and generate a JWT secret.
 1. **Database Setup**:
    - Install PostgreSQL (see [docs/INSTALL_POSTGRESQL.md](./docs/INSTALL_POSTGRESQL.md) for Windows guide)
    - Run the database setup script:
      ```bash
-     # Windows PowerShell
-     .\scripts\Setup-Database.ps1
+     # Bash/WSL (Recommandé)
+     ./scripts/database-setup.sh
      
-     # Linux/Mac
-     ./scripts/setup-database.sh
      ```
    - Test the database connection: `npm run test:db`
 1. Configure remaining variables in `.env.local` (marketplace credentials, Azure services, etc.)
 1. Press F5 to start debugging which launches your app in Microsoft 365 Agents Playground using a web browser. Select `Debug in Microsoft 365 Agents Playground`.
 1. You can send any message to get a response from the agent.
 
-### Production Deployment
+## 🏭 Déploiement Production
+
+### Avec Makefile (Recommandé)
+
+```bash
+# Déploiement production complet avec validation
+make prod-deploy
+
+# Ou pour plus de contrôle :
+make setup       # Configuration initiale
+make deploy      # Déploiement Azure infrastructure
+make configure   # Configuration APIM et services
+make validate    # Tests complets (15 validations)
+```
+
+### Configuration Manuelle Production
 
 For production deployment with marketplace integration:
 
@@ -68,11 +106,10 @@ For production deployment with marketplace integration:
    INCLUDED_QUOTA_PER_MONTH=300
    ```
 
-2. **Deploy APIM Infrastructure**: Use the provided Bicep templates:
+2. **Deploy APIM Infrastructure**: Use the provided deployment scripts:
    ```bash
-   az deployment group create \
-     --resource-group your-rg \
-     --template-file infra/apim/apim.bicep \
+   # Déploiement automatisé
+   ./scripts/azure-deploy.sh --show-config --create-resource-group
      --parameters publisherEmail=your@email.com publisherName="Your Company"
    ```
 
@@ -197,6 +234,17 @@ You can follow [Build a Basic AI Chatbot in Teams](https://aka.ms/teamsfx-basic-
 - [Customize model type](https://aka.ms/teamsfx-basic-ai-chatbot#customize-model-type)
 - [Customize model parameters](https://aka.ms/teamsfx-basic-ai-chatbot#customize-model-parameters)
 - [Handle messages with image](https://aka.ms/teamsfx-basic-ai-chatbot#handle-messages-with-image)
+
+## 📚 Documentation Complète
+
+Pour une documentation détaillée, consultez le dossier `docs/` :
+
+- **[docs/README.md](docs/README.md)** - 📚 Index de navigation de toute la documentation
+- **[docs/MAKEFILE_GUIDE.md](docs/MAKEFILE_GUIDE.md)** - 🛠️ Guide complet du Makefile avec exemples
+- **[docs/README_QUOTA.md](docs/README_QUOTA.md)** - 💼 Système de quota et Marketplace
+- **[docs/DEPLOYMENT_SUMMARY.md](docs/DEPLOYMENT_SUMMARY.md)** - 🏗️ Résumé du déploiement Azure
+- **[docs/azure-components.md](docs/azure-components.md)** - ☁️ Composants Azure déployés et à venir
+- **[TODO.md](TODO.md)** - ✅ État actuel et prochaines étapes
 
 ## Additional information and references
 

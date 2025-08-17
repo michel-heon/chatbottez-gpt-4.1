@@ -1,6 +1,22 @@
 # TODO - Microsoft Marketplace Quota Implementation
 
-## 🔧 Setup et Configuration Immédiate
+## � Déploiement Rapide avec Makefile
+
+### ✅ Configuration et déploiement automatisés
+- [x] **Makefile créé** : Interface unifiée pour tous les workflows
+- [x] **Scripts standardisés** : Nomenclature `<objet>-<action>.sh` alignée sur l'architecture
+- [x] **Documentation complète** : Guide Makefile et composants Azure
+
+#### Commandes principales disponibles :
+```bash
+make help          # Afficher l'aide complète
+make all           # Déploiement complet (setup + deploy + configure + validate)
+make dev-setup     # Configuration rapide pour développement
+make status        # Statut du système
+make validate      # Tests de validation (15 validations)
+```
+
+## �🔧 Setup et Configuration Immédiate
 
 ### ✅ 1. Installation des dépendances
 - [x] Exécuter `npm install` pour installer les nouvelles dépendances
@@ -9,7 +25,7 @@
 
 ### ✅ 2. Configuration des variables d'environnement
 - [x] Copier `.env.example` vers `.env.local`
-- [x] Configurer le script d'environnement automatisé (`scripts/Setup-Environment.ps1`)
+- [x] Configurer le script d'environnement automatisé (`scripts/environment-setup.sh`)
 - [x] Générer automatiquement `TENANT_ID` et `JWT_SECRET_KEY`
 - [ ] Remplir les valeurs réelles pour :
   - [ ] `MARKETPLACE_API_KEY` (clé d'API Microsoft Marketplace)
@@ -20,32 +36,31 @@
   - [ ] `AZURE_OPENAI_API_KEY` et `AZURE_OPENAI_ENDPOINT` (Azure OpenAI)
 
 ### ✅ 3. Base de données
-- [x] Créer les scripts d'installation automatisés (PowerShell et Bash)
+- [x] Créer les scripts d'installation automatisés (Bash/WSL et PowerShell legacy)
 - [x] Script de test de connexion et vérification (`scripts/test-database.ts`)
 - [x] Guide d'installation PostgreSQL pour Windows (`docs/INSTALL_POSTGRESQL.md`)
 - [x] Scripts NPM pour la gestion de base de données (`npm run db:setup`, `npm run test:db`)
-- [ ] **Action utilisateur requise** : Installer PostgreSQL sur votre machine
-- [ ] **Action utilisateur requise** : Exécuter `.\scripts\Setup-Database.ps1` pour créer la base
-- [ ] **Action utilisateur requise** : Configurer les variables DB_PASSWORD dans .env.local
-- [ ] Tester la connexion avec `npm run test:db`
+- [x] **DÉPLOYÉ** : PostgreSQL Flexible Server dans Azure (Canada Central)
+- [x] **DÉPLOYÉ** : Azure Key Vault pour la gestion des secrets
+- [x] Tester la connexion avec `npm run test:db` ou `make test-db`
 
 ## 🏗️ Infrastructure Azure
 
-### 4. Déploiement APIM (API Management)
-- [ ] Créer un service Azure API Management
-- [ ] Déployer le fichier `infra/apim/apim.bicep` :
-  ```bash
-  az deployment group create --resource-group your-rg --template-file infra/apim/apim.bicep --parameters @apim-parameters.json
-  ```
-- [ ] Configurer les Event Hubs pour les logs (optionnel)
-- [ ] Tester la policy de quota APIM
+### ✅ 4. Déploiement APIM (API Management)
+- [x] **DÉPLOYÉ** : Service Azure API Management dans rg-chatbottez-gpt-4-1-dev-02
+- [x] **DÉPLOYÉ** : Policies de quota et rate limiting configurées
+- [x] **DÉPLOYÉ** : Intégration avec Key Vault pour les secrets
+- [x] **VALIDÉ** : 15 tests de validation passés avec succès
+- [x] Scripts de déploiement automatisés : `make deploy`
+- [x] Scripts de configuration post-déploiement : `make configure`
 
 ### 5. Configuration Microsoft Marketplace
 - [ ] Créer l'offre SaaS dans Partner Center
 - [ ] Configurer le plan "300 questions/mois"
 - [ ] Configurer les webhooks de fulfillment
 - [ ] Configurer les dimensions de metered billing
-- [ ] Obtenir les clés d'API Marketplace
+- [ ] Obtenir les clés d'API Marketplace réelles
+- [x] Script de configuration Marketplace : `scripts/marketplace-setup.sh`
 
 ## 🔨 Corrections de Code
 
@@ -56,26 +71,34 @@
 - [ ] Corriger les imports manquants
 
 ### 7. Implémentation base de données réelle
-- [ ] Remplacer `SubscriptionService` in-memory par une vraie DB
-- [ ] Implémenter les repositories PostgreSQL/SQL Server
+- [x] **DÉPLOYÉ** : PostgreSQL Flexible Server dans Azure
+- [x] **CONFIGURÉ** : Connection strings et variables d'environnement
+- [ ] Remplacer `SubscriptionService` in-memory par PostgreSQL
+- [ ] Implémenter les repositories PostgreSQL
 - [ ] Ajouter les migrations de base de données
 - [ ] Configurer le connection pooling
 
 ## ✅ Tests et Validation
 
-### 8. Tests unitaires
+### ✅ 8. Infrastructure validée
+- [x] **15 tests de validation** passés avec succès via `make validate`
+- [x] **Configuration testée** via `make test-config`
+- [x] **Base de données testée** via `make test-db`
+- [x] **Déploiement vérifié** via scripts automatisés
+
+### 9. Tests unitaires applicatifs
 - [ ] Corriger la configuration Jest (`jest.config.js`)
 - [ ] Faire passer tous les tests unitaires
 - [ ] Ajouter des tests pour les nouveaux services
 - [ ] Tests de couverture > 80%
 
-### 9. Tests d'intégration
+### 10. Tests d'intégration
 - [ ] Créer des tests d'intégration pour les webhooks Marketplace
 - [ ] Tests de quota enforcement avec APIM
 - [ ] Tests de publication d'événements d'usage
 - [ ] Tests de retry logic
 
-### 10. Tests de charge quota
+### 11. Tests de charge quota
 - [ ] Créer un test qui envoie 300+ requêtes
 - [ ] Vérifier que la 301ème requête est bloquée (HTTP 429)
 - [ ] Tester le reset mensuel du quota
@@ -125,7 +148,7 @@
 ## 📋 Documentation et Formation
 
 ### 16. Documentation technique
-- [ ] Finaliser `README_QUOTA.md`
+- [x] Finaliser `docs/README_QUOTA.md` ✅ **COMPLÉTÉ**
 - [ ] Documenter les APIs Marketplace
 - [ ] Créer un guide de troubleshooting
 - [ ] Documenter les procédures d'urgence
