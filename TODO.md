@@ -19,11 +19,15 @@
   - [ ] `BOT_ID` et `BOT_PASSWORD` (Azure Bot Service)
   - [ ] `AZURE_OPENAI_API_KEY` et `AZURE_OPENAI_ENDPOINT` (Azure OpenAI)
 
-### 3. Base de données
-- [ ] Créer une base de données PostgreSQL ou SQL Server
-- [ ] Exécuter le script `src/db/schema.sql` pour créer les tables
-- [ ] Configurer les permissions de base de données
-- [ ] Tester la connexion
+### ✅ 3. Base de données
+- [x] Créer les scripts d'installation automatisés (PowerShell et Bash)
+- [x] Script de test de connexion et vérification (`scripts/test-database.ts`)
+- [x] Guide d'installation PostgreSQL pour Windows (`docs/INSTALL_POSTGRESQL.md`)
+- [x] Scripts NPM pour la gestion de base de données (`npm run db:setup`, `npm run test:db`)
+- [ ] **Action utilisateur requise** : Installer PostgreSQL sur votre machine
+- [ ] **Action utilisateur requise** : Exécuter `.\scripts\Setup-Database.ps1` pour créer la base
+- [ ] **Action utilisateur requise** : Configurer les variables DB_PASSWORD dans .env.local
+- [ ] Tester la connexion avec `npm run test:db`
 
 ## 🏗️ Infrastructure Azure
 

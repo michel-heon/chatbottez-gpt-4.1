@@ -23,9 +23,12 @@
         "test:coverage": "jest --coverage",
         "test:integration": "jest --testPathPattern=integration",
         "test:quota-load": "jest --testPathPattern=quota.*load",
+        "test:db": "ts-node scripts/test-database.ts",
         "watch": "nodemon --exec \"npm run start\"",
         "db:migrate": "echo 'Run your database migrations here'",
-        "db:seed": "echo 'Run your database seeding here'"
+        "db:seed": "echo 'Run your database seeding here'",
+        "db:setup": "node -e \"console.log('Use: .\\\\scripts\\\\Setup-Database.ps1 (Windows) or ./scripts/setup-database.sh (Linux/Mac)')\"",
+        "db:test": "npm run test:db"
     },
     "repository": {
         "type": "git",

@@ -41,7 +41,18 @@ For detailed information about quota management, see [README_QUOTA.md](./README_
    ./scripts/configure-environment.sh
    ```
    This will create `.env.local` with your Azure tenant ID and generate a JWT secret.
-1. Configure remaining variables in `.env.local` (marketplace credentials, database, etc.)
+1. **Database Setup**:
+   - Install PostgreSQL (see [docs/INSTALL_POSTGRESQL.md](./docs/INSTALL_POSTGRESQL.md) for Windows guide)
+   - Run the database setup script:
+     ```bash
+     # Windows PowerShell
+     .\scripts\Setup-Database.ps1
+     
+     # Linux/Mac
+     ./scripts/setup-database.sh
+     ```
+   - Test the database connection: `npm run test:db`
+1. Configure remaining variables in `.env.local` (marketplace credentials, Azure services, etc.)
 1. Press F5 to start debugging which launches your app in Microsoft 365 Agents Playground using a web browser. Select `Debug in Microsoft 365 Agents Playground`.
 1. You can send any message to get a response from the agent.
 
