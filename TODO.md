@@ -2,19 +2,22 @@
 
 ## 🔧 Setup et Configuration Immédiate
 
-### 1. Installation des dépendances
-- [ ] Exécuter `npm install` pour installer les nouvelles dépendances
-- [ ] Vérifier que toutes les dépendances TypeScript sont installées
-- [ ] Corriger les erreurs de compilation TypeScript
+### ✅ 1. Installation des dépendances
+- [x] Exécuter `npm install` pour installer les nouvelles dépendances
+- [x] Vérifier que toutes les dépendances TypeScript sont installées
+- [x] Corriger les erreurs de compilation TypeScript
 
-### 2. Configuration des variables d'environnement
-- [ ] Copier `.env.example` vers `.env.local` ou `.env.development`
+### ✅ 2. Configuration des variables d'environnement
+- [x] Copier `.env.example` vers `.env.local`
+- [x] Configurer le script d'environnement automatisé (`scripts/Setup-Environment.ps1`)
+- [x] Générer automatiquement `TENANT_ID` et `JWT_SECRET_KEY`
 - [ ] Remplir les valeurs réelles pour :
   - [ ] `MARKETPLACE_API_KEY` (clé d'API Microsoft Marketplace)
   - [ ] `DATABASE_URL` (chaîne de connexion à la base de données)
-  - [ ] `JWT_SECRET_KEY` (secret pour valider les webhooks)
   - [ ] `AZURE_STORAGE_CONNECTION_STRING` (pour retry des événements d'usage)
   - [ ] `APPLICATION_INSIGHTS_CONNECTION_STRING` (monitoring)
+  - [ ] `BOT_ID` et `BOT_PASSWORD` (Azure Bot Service)
+  - [ ] `AZURE_OPENAI_API_KEY` et `AZURE_OPENAI_ENDPOINT` (Azure OpenAI)
 
 ### 3. Base de données
 - [ ] Créer une base de données PostgreSQL ou SQL Server
