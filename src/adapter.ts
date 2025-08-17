@@ -1,4 +1,5 @@
 import { TeamsAdapter } from "@microsoft/teams-ai";
+import { TurnContext } from "botbuilder";
 
 // This bot's main dialog.
 import config from "./config";
@@ -6,7 +7,7 @@ import config from "./config";
 const adapter = new TeamsAdapter(config);
 
 // Catch-all for errors.
-const onTurnErrorHandler = async (context, error) => {
+const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   // This check writes out errors to console log .vs. app insights.
   // NOTE: In production environment, you should consider logging this to Azure
   //       application insights.

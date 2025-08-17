@@ -4,6 +4,7 @@ import { logger } from '../utils/logger';
 import { SubscriptionService } from '../services/subscriptionService';
 import { validateMarketplaceWebhook } from '../utils/auth';
 import { AuditLogger } from '../utils/auditLogger';
+import { getErrorMessage } from '../utils/errorHandler';
 
 export interface MarketplaceResolveRequest {
   token: string;
@@ -106,13 +107,13 @@ export class MarketplaceFulfillmentController {
       });
 
     } catch (error) {
-      logger.error('Error resolving marketplace token', { error: error.message, requestId });
+      logger.error('Error resolving marketplace token', { error: getErrorMessage(error), requestId });
       
       await this.auditLogger.log({
         action: 'marketplace.resolve',
         requestId,
         result: 'error',
-        details: { error: error.message }
+        details: { error: getErrorMessage(error) }
       });
 
       res.status(500).json({ error: 'Internal server error' });
@@ -167,14 +168,14 @@ export class MarketplaceFulfillmentController {
       res.json({ message: 'Subscription activated successfully' });
 
     } catch (error) {
-      logger.error('Error activating subscription', { error: error.message, requestId, subscriptionId: req.params.subscriptionId });
+      logger.error('Error activating subscription', { error: getErrorMessage(error), requestId, subscriptionId: req.params.subscriptionId });
       
       await this.auditLogger.log({
         action: 'marketplace.activate',
         subscriptionId: req.params.subscriptionId,
         requestId,
         result: 'error',
-        details: { error: error.message }
+        details: { error: getErrorMessage(error) }
       });
 
       res.status(500).json({ error: 'Internal server error' });
@@ -224,14 +225,14 @@ export class MarketplaceFulfillmentController {
       res.json({ message: 'Subscription updated successfully' });
 
     } catch (error) {
-      logger.error('Error updating subscription', { error: error.message, requestId, subscriptionId: req.params.subscriptionId });
+      logger.error('Error updating subscription', { error: getErrorMessage(error), requestId, subscriptionId: req.params.subscriptionId });
       
       await this.auditLogger.log({
         action: 'marketplace.update',
         subscriptionId: req.params.subscriptionId,
         requestId,
         result: 'error',
-        details: { error: error.message }
+        details: { error: getErrorMessage(error) }
       });
 
       res.status(500).json({ error: 'Internal server error' });
@@ -279,14 +280,14 @@ export class MarketplaceFulfillmentController {
       res.json({ message: 'Subscription deactivated successfully' });
 
     } catch (error) {
-      logger.error('Error deactivating subscription', { error: error.message, requestId, subscriptionId: req.params.subscriptionId });
+      logger.error('Error deactivating subscription', { error: getErrorMessage(error), requestId, subscriptionId: req.params.subscriptionId });
       
       await this.auditLogger.log({
         action: 'marketplace.deactivate',
         subscriptionId: req.params.subscriptionId,
         requestId,
         result: 'error',
-        details: { error: error.message }
+        details: { error: getErrorMessage(error) }
       });
 
       res.status(500).json({ error: 'Internal server error' });

@@ -5,6 +5,7 @@ import { SubscriptionService } from '../services/subscriptionService';
 import { MarketplaceMeteringClient, UsageEvent } from '../marketplace/meteringClient';
 import { AuditLogger } from '../utils/auditLogger';
 import { TurnContext } from 'botbuilder';
+import { getErrorMessage } from '../utils/errorHandler';
 
 export interface QuotaMiddlewareOptions {
   enabled?: boolean;
@@ -98,11 +99,11 @@ export class QuotaUsageMiddleware {
             result: 'blocked',
             details: {
               remainingQuota: quotaInfo.remainingQuota,
-              reason: quotaCheck.reason
+              reason: quotaCheck.reason || 'Quota exceeded'
             }
           });
 
-          return this.sendQuotaExceededResponse(res, quotaInfo, quotaCheck.reason);
+          return this.sendQuotaExceededResponse(res, quotaInfo, quotaCheck.reason || 'Quota exceeded');
         }
 
         // Set quota headers
@@ -112,13 +113,13 @@ export class QuotaUsageMiddleware {
         this.wrapResponse(req, res, next);
 
       } catch (error) {
-        logger.error('Error in quota middleware', { error: error.message, requestId });
+        logger.error('Error in quota middleware', { error: getErrorMessage(error), requestId });
         
         await this.auditLogger.log({
           action: 'quota.error',
           requestId,
           result: 'error',
-          details: { error: error.message }
+          details: { error: getErrorMessage(error) }
         });
 
         // Continue processing even if quota check fails (fail open)
@@ -157,7 +158,7 @@ export class QuotaUsageMiddleware {
           result: 'blocked',
           details: {
             remainingQuota: quotaInfo.remainingQuota,
-            reason: quotaCheck.reason
+            reason: quotaCheck.reason || 'Quota exceeded'
           }
         });
 
@@ -171,14 +172,14 @@ export class QuotaUsageMiddleware {
         try {
           await this.publishUsageEvent(quotaInfo, requestId);
         } catch (error) {
-          logger.error('Failed to publish usage event for Teams bot', { error: error.message, requestId });
+          logger.error('Failed to publish usage event for Teams bot', { error: getErrorMessage(error), requestId });
         }
       }, 0);
 
       return true;
 
     } catch (error) {
-      logger.error('Error in Teams bot quota processing', { error: error.message, requestId });
+      logger.error('Error in Teams bot quota processing', { error: getErrorMessage(error), requestId });
       return true; // Fail open
     }
   }
@@ -228,7 +229,7 @@ export class QuotaUsageMiddleware {
       };
 
     } catch (error) {
-      logger.error('Error extracting quota info', { error: error.message });
+      logger.error('Error extracting quota info', { error: getErrorMessage(error) });
       return null;
     }
   }
@@ -276,7 +277,7 @@ export class QuotaUsageMiddleware {
       };
 
     } catch (error) {
-      logger.error('Error extracting quota info from Teams context', { error: error.message });
+      logger.error('Error extracting quota info from Teams context', { error: getErrorMessage(error) });
       return null;
     }
   }
@@ -338,7 +339,7 @@ export class QuotaUsageMiddleware {
           try {
             await (req as any).quotaMiddleware?.publishUsageEvent(req.quotaInfo, req.requestId);
           } catch (error) {
-            logger.error('Failed to publish usage event', { error: error.message, requestId: req.requestId });
+            logger.error('Failed to publish usage event', { error: getErrorMessage(error), requestId: req.requestId });
           }
         }, 0);
       }
@@ -353,7 +354,7 @@ export class QuotaUsageMiddleware {
           try {
             await (req as any).quotaMiddleware?.publishUsageEvent(req.quotaInfo, req.requestId);
           } catch (error) {
-            logger.error('Failed to publish usage event', { error: error.message, requestId: req.requestId });
+            logger.error('Failed to publish usage event', { error: getErrorMessage(error), requestId: req.requestId });
           }
         }, 0);
       }
@@ -416,7 +417,7 @@ export class QuotaUsageMiddleware {
 
     } catch (error) {
       logger.error('Failed to publish usage event', { 
-        error: error.message, 
+        error: getErrorMessage(error), 
         requestId,
         subscriptionId: quotaInfo.subscriptionId 
       });
@@ -428,7 +429,7 @@ export class QuotaUsageMiddleware {
         subscriptionId: quotaInfo.subscriptionId,
         requestId,
         result: 'error',
-        details: { error: error.message }
+        details: { error: getErrorMessage(error) }
       });
 
       throw error;

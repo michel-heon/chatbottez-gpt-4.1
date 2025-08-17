@@ -106,13 +106,14 @@ expressApp.post("/api/messages", async (req, res) => {
     });
     
   } catch (error) {
-    logger.error('Error processing bot message', { error: error.message, requestId });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error processing bot message', { error: errorMessage, requestId });
     
     await auditLogger.log({
       action: 'bot.message.error',
       requestId,
       result: 'error',
-      details: { error: error.message }
+      details: { error: errorMessage }
     });
     
     // Don't expose internal errors to clients

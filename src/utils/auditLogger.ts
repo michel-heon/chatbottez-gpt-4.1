@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import { getErrorMessage } from './errorHandler';
 
 export interface AuditLogEntry {
   id?: string;
@@ -50,7 +51,7 @@ export class AuditLogger {
 
     } catch (error) {
       logger.error('Failed to write audit log', { 
-        error: error.message,
+        error: getErrorMessage(error),
         originalEntry: entry 
       });
     }
@@ -166,7 +167,7 @@ export class AuditLogger {
 
     } catch (error) {
       logger.error('Failed to persist audit log', { 
-        error: error.message,
+        error: getErrorMessage(error),
         entryId: entry.id 
       });
     }
@@ -205,7 +206,7 @@ export class AuditLogger {
             result: 'error',
             details: {
               duration,
-              error: error.message,
+              error: getErrorMessage(error),
               args: process.env.LOG_LEVEL === 'debug' ? args : undefined
             }
           });

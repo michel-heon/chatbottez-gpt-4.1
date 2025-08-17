@@ -8,8 +8,8 @@ import { Application, ActionPlanner, OpenAIModel, PromptManager } from "@microso
 // Create AI components
 const model = new OpenAIModel({
   azureApiKey: config.azureOpenAIKey,
-  azureDefaultDeployment: config.azureOpenAIDeploymentName,
-  azureEndpoint: config.azureOpenAIEndpoint,
+  azureDefaultDeployment: config.azureOpenAIDeploymentName || '',
+  azureEndpoint: config.azureOpenAIEndpoint || '',
 
   useSystemMessages: true,
   logRequests: true,

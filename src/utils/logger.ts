@@ -51,7 +51,7 @@ class Logger {
       };
       
       const resetColor = '\x1b[0m';
-      const color = colorMap[logEntry.level] || '';
+      const color = colorMap[logEntry.level as keyof typeof colorMap] || '';
       
       console.log(
         `${color}[${logEntry.timestamp}] ${logEntry.level.toUpperCase()}: ${logEntry.message}${resetColor}`,

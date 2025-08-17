@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { logger } from './logger';
+import { getErrorMessage } from './errorHandler';
 
 /**
  * Validates Microsoft Marketplace webhook signatures
@@ -37,12 +38,12 @@ export function validateMarketplaceWebhook(req: Request): boolean {
       jwt.verify(token, jwtSecret);
       return true;
     } catch (jwtError) {
-      logger.warn('Invalid JWT token in marketplace webhook', { error: jwtError.message });
+      logger.warn('Invalid JWT token in marketplace webhook', { error: getErrorMessage(jwtError) });
       return false;
     }
 
   } catch (error) {
-    logger.error('Error validating marketplace webhook', { error: error.message });
+    logger.error('Error validating marketplace webhook', { error: getErrorMessage(error) });
     return false;
   }
 }
@@ -76,7 +77,7 @@ export function validateApimSubscriptionKey(req: Request): boolean {
     return subscriptionKey === expectedKey;
 
   } catch (error) {
-    logger.error('Error validating APIM subscription key', { error: error.message });
+    logger.error('Error validating APIM subscription key', { error: getErrorMessage(error) });
     return false;
   }
 }
@@ -113,7 +114,7 @@ export function extractTenantId(req: Request): string | null {
     return tenantId || null;
 
   } catch (error) {
-    logger.error('Error extracting tenant ID', { error: error.message });
+    logger.error('Error extracting tenant ID', { error: getErrorMessage(error) });
     return null;
   }
 }
@@ -150,7 +151,7 @@ export function extractUserId(req: Request): string | null {
     return userId || null;
 
   } catch (error) {
-    logger.error('Error extracting user ID', { error: error.message });
+    logger.error('Error extracting user ID', { error: getErrorMessage(error) });
     return null;
   }
 }

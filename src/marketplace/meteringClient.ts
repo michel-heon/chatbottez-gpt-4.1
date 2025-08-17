@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
 import { AuditLogger } from '../utils/auditLogger';
+import { getErrorMessage, toError } from '../utils/errorHandler';
 
 export interface UsageEvent {
   subscriptionId: string;
@@ -99,7 +100,7 @@ export class MarketplaceMeteringClient {
 
     } catch (error) {
       logger.error('Failed to publish usage event', {
-        error: error.message,
+        error: getErrorMessage(error),
         requestId,
         eventId,
         subscriptionId: usageEvent.subscriptionId
@@ -112,13 +113,13 @@ export class MarketplaceMeteringClient {
         result: 'error',
         details: {
           eventId,
-          error: error.message,
+          error: getErrorMessage(error),
           dimension: usageEvent.dimension,
           quantity: usageEvent.quantity
         }
       });
 
-      throw error;
+      throw toError(error);
     }
   }
 
@@ -129,7 +130,7 @@ export class MarketplaceMeteringClient {
    * @returns Promise<PublishUsageResponse>
    */
   async publishUsageWithRetry(usageEvent: UsageEvent, maxRetries: number = 5): Promise<PublishUsageResponse> {
-    let lastError: Error;
+    let lastError: Error | undefined;
     const initialDelay = parseInt(process.env.RETRY_INITIAL_DELAY_MS || '1000');
     const maxDelay = parseInt(process.env.RETRY_MAX_DELAY_MS || '30000');
 
@@ -137,14 +138,14 @@ export class MarketplaceMeteringClient {
       try {
         return await this.publishUsage(usageEvent);
       } catch (error) {
-        lastError = error;
+        lastError = toError(error);
         
         if (attempt === maxRetries) {
           logger.error('All retry attempts exhausted for usage event', {
             subscriptionId: usageEvent.subscriptionId,
             attempt: attempt + 1,
             maxRetries: maxRetries + 1,
-            error: error.message
+            error: getErrorMessage(error)
           });
           break;
         }
@@ -157,14 +158,14 @@ export class MarketplaceMeteringClient {
           attempt: attempt + 1,
           maxRetries: maxRetries + 1,
           delay,
-          error: error.message
+          error: getErrorMessage(error)
         });
 
         await this.sleep(delay);
       }
     }
 
-    throw lastError;
+    throw lastError || new Error('Unknown error in retry logic');
   }
 
   /**
@@ -190,7 +191,7 @@ export class MarketplaceMeteringClient {
         logger.error('Failed to publish usage event in batch', {
           batchId,
           subscriptionId: event.subscriptionId,
-          error: error.message
+          error: getErrorMessage(error)
         });
         
         // Continue with other events even if one fails

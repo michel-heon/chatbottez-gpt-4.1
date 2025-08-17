@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger';
+import { getErrorMessage } from '../utils/errorHandler';
 
 export interface Subscription {
   id: string;
@@ -100,7 +101,7 @@ export class SubscriptionService {
         return subscription;
       }
     } catch (error) {
-      logger.error('Error creating/updating subscription', { error: error.message, request });
+      logger.error('Error creating/updating subscription', { error: getErrorMessage(error), request });
       throw error;
     }
   }
@@ -117,7 +118,7 @@ export class SubscriptionService {
       }
       return null;
     } catch (error) {
-      logger.error('Error getting subscription by marketplace ID', { error: error.message, marketplaceSubscriptionId });
+      logger.error('Error getting subscription by marketplace ID', { error: getErrorMessage(error), marketplaceSubscriptionId });
       throw error;
     }
   }
@@ -134,7 +135,7 @@ export class SubscriptionService {
       }
       return null;
     } catch (error) {
-      logger.error('Error getting subscription by tenant ID', { error: error.message, tenantId });
+      logger.error('Error getting subscription by tenant ID', { error: getErrorMessage(error), tenantId });
       throw error;
     }
   }
@@ -146,7 +147,7 @@ export class SubscriptionService {
     try {
       return this.subscriptions.get(id) || null;
     } catch (error) {
-      logger.error('Error getting subscription by ID', { error: error.message, id });
+      logger.error('Error getting subscription by ID', { error: getErrorMessage(error), id });
       throw error;
     }
   }
@@ -177,7 +178,7 @@ export class SubscriptionService {
 
       return updatedSubscription;
     } catch (error) {
-      logger.error('Error updating subscription', { error: error.message, id, updates });
+      logger.error('Error updating subscription', { error: getErrorMessage(error), id, updates });
       throw error;
     }
   }
@@ -201,7 +202,7 @@ export class SubscriptionService {
       return totalUsage;
     } catch (error) {
       logger.error('Error getting usage for period', { 
-        error: error.message, 
+        error: getErrorMessage(error), 
         subscriptionId, 
         startDate, 
         endDate 
@@ -249,7 +250,7 @@ export class SubscriptionService {
       return usageEvent;
     } catch (error) {
       logger.error('Error recording usage event', { 
-        error: error.message, 
+        error: getErrorMessage(error), 
         subscriptionId, 
         dimension, 
         quantity 
@@ -290,7 +291,7 @@ export class SubscriptionService {
       return updatedEvent;
     } catch (error) {
       logger.error('Error updating usage event status', { 
-        error: error.message, 
+        error: getErrorMessage(error), 
         eventId, 
         status 
       });
@@ -314,7 +315,7 @@ export class SubscriptionService {
 
       return pendingEvents;
     } catch (error) {
-      logger.error('Error getting pending usage events', { error: error.message });
+      logger.error('Error getting pending usage events', { error: getErrorMessage(error) });
       throw error;
     }
   }
@@ -326,7 +327,7 @@ export class SubscriptionService {
     try {
       return Array.from(this.subscriptions.values());
     } catch (error) {
-      logger.error('Error getting all subscriptions', { error: error.message });
+      logger.error('Error getting all subscriptions', { error: getErrorMessage(error) });
       throw error;
     }
   }
