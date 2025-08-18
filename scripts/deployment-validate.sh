@@ -145,8 +145,8 @@ fi
 # Validation des scripts
 print_header "📜 Validation des Scripts"
 
-run_check "Script de déploiement exécutable" "[ -x 'scripts/deploy-azure-hybrid.sh' ]"
-run_check "Script de configuration exécutable" "[ -x 'scripts/post-deploy-config.sh' ]"
+run_check "Script de déploiement exécutable" "[ -x 'scripts/azure-deploy.sh' ]"
+run_check "Script de configuration exécutable" "[ -x 'scripts/azure-configure.sh' ]"
 run_check "Module de configuration disponible" "[ -f 'scripts/config-loader.sh' ]"
 
 # Résumé final

@@ -171,7 +171,7 @@ status:
 	@echo "$(CYAN)=================================================================$(NC)"
 	@echo ""
 	@echo "$(YELLOW)📁 Fichiers de configuration:$(NC)"
-	@if [ -f ".env.local" ]; then echo "  ✅ .env.local"; else echo "  ❌ .env.local (manquant)"; fi
+	@if [ -f "env/.env.local" ]; then echo "  ✅ env/.env.local"; else echo "  ❌ env/.env.local (manquant)"; fi
 	@if [ -f "$(CONFIG_DIR)/azure.env" ]; then echo "  ✅ config/azure.env"; else echo "  ❌ config/azure.env (manquant)"; fi
 	@if [ -f "marketplace.env" ]; then echo "  ✅ marketplace.env"; else echo "  ⚠️  marketplace.env (optionnel)"; fi
 	@echo ""
