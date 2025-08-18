@@ -96,9 +96,9 @@ if [ -f "deployment-outputs.json" ]; then
     print_header "🔗 Validation de la Configuration"
     
     # Tests de configuration
-    run_check "Fichier .env.local existe" "[ -f '.env.local' ]"
-    run_check "DATABASE_URL configuré" "grep -q '^DATABASE_URL=' .env.local"
-    run_check "Variables Azure configurées" "grep -q '^AZURE_DATABASE_SERVER=' .env.local"
+    run_check "Fichier env/.env.local existe" "[ -f 'env/.env.local' ]"
+    run_check "DATABASE_URL configuré" "grep -q '^DATABASE_URL=' env/.env.local"
+    run_check "Variables Azure configurées" "grep -q '^AZURE_DATABASE_SERVER=' env/.env.local"
     
     # Test de connectivité réseau
     print_header "🌐 Tests de Connectivité"
@@ -122,8 +122,8 @@ if [ -f "deployment-outputs.json" ]; then
     CHECKS_TOTAL=$((CHECKS_TOTAL + 1))
     
     # Test de connexion à la base
-    if [ -f ".env.local" ]; then
-        DATABASE_URL=$(grep '^DATABASE_URL=' .env.local | cut -d'=' -f2)
+    if [ -f "env/.env.local" ]; then
+        DATABASE_URL=$(grep '^DATABASE_URL=' env/.env.local | cut -d'=' -f2)
         
         print_header "💾 Test de Base de Données"
         

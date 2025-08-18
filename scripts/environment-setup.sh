@@ -99,22 +99,22 @@ else
     fi
 fi
 
-# Step 3: Create .env.local
-print_step "3" "Création du fichier .env.local..."
+# Step 3: Create env/.env.local
+print_step "3" "Création du fichier env/.env.local..."
 
-if [ -f ".env.local" ]; then
+if [ -f "env/.env.local" ]; then
     echo ""
-    read -p "Le fichier .env.local existe. Remplacer? (y/N): " -r
+    read -p "Le fichier env/.env.local existe. Remplacer? (y/N): " -r
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         print_info "Conservation du fichier existant"
         
         # Vérifier si TENANT_ID est déjà configuré
-        if grep -q "^TENANT_ID=" .env.local && ! grep -q "your-azure-tenant-id" .env.local; then
-            print_info "TENANT_ID déjà configuré dans .env.local"
+        if grep -q "^TENANT_ID=" env/.env.local && ! grep -q "your-azure-tenant-id" env/.env.local; then
+            print_info "TENANT_ID déjà configuré dans env/.env.local"
         else
             # Mettre à jour seulement TENANT_ID
-            if grep -q "your-azure-tenant-id" .env.local; then
-                sed -i.backup "s/your-azure-tenant-id/$TENANT_ID/g" .env.local
+            if grep -q "your-azure-tenant-id" env/.env.local; then
+                sed -i.backup "s/your-azure-tenant-id/$TENANT_ID/g" env/.env.local
                 print_success "TENANT_ID mis à jour: $TENANT_ID"
             fi
         fi
@@ -127,23 +127,23 @@ if [ -f ".env.local" ]; then
     echo ""
 fi
 
-if [ ! -f ".env.example" ]; then
-    print_error "Fichier .env.example non trouvé"
+if [ ! -f "env/.env.example" ]; then
+    print_error "Fichier env/.env.example non trouvé"
     print_info "Assurez-vous d'être dans le répertoire racine du projet"
     exit 1
 fi
 
 # Copy template
-cp ".env.example" ".env.local"
-print_success "Fichier .env.local créé"
+cp "env/env/.env.example" "env/.env.local"
+print_success "Fichier env/.env.local créé"
 
 # Replace TENANT_ID
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
-    sed -i '.backup' "s/your-azure-tenant-id/$TENANT_ID/g" .env.local
+    sed -i '.backup' "s/your-azure-tenant-id/$TENANT_ID/g" env/.env.local
 else
     # Linux/WSL
-    sed -i.backup "s/your-azure-tenant-id/$TENANT_ID/g" .env.local
+    sed -i.backup "s/your-azure-tenant-id/$TENANT_ID/g" env/.env.local
 fi
 print_success "TENANT_ID configuré: $TENANT_ID"
 
@@ -154,9 +154,9 @@ if command -v openssl &> /dev/null; then
     JWT_SECRET=$(openssl rand -hex 32)
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '.backup' "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" .env.local
+        sed -i '.backup' "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" env/.env.local
     else
-        sed -i.backup "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" .env.local
+        sed -i.backup "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" env/.env.local
     fi
     
     print_success "JWT_SECRET_KEY généré"
@@ -165,9 +165,9 @@ elif command -v node &> /dev/null; then
     JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '.backup' "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" .env.local
+        sed -i '.backup' "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" env/.env.local
     else
-        sed -i.backup "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" .env.local
+        sed -i.backup "s/your-jwt-secret-key-64-characters-long/$JWT_SECRET/g" env/.env.local
     fi
     
     print_success "JWT_SECRET_KEY généré (via Node.js)"
@@ -177,13 +177,13 @@ else
 fi
 
 # Nettoyer les fichiers de backup
-rm -f .env.local.backup
+rm -f env/.env.local.backup
 
 # Step 5: Manual configuration guidance
 print_step "5" "Variables à configurer manuellement..."
 
 echo ""
-echo -e "${YELLOW}Variables nécessitant une configuration manuelle dans .env.local:${NC}"
+echo -e "${YELLOW}Variables nécessitant une configuration manuelle dans env/.env.local:${NC}"
 echo ""
 echo -e "${CYAN}🔧 Infrastructure Azure:${NC}"
 echo -e "   DATABASE_URL - Base de données PostgreSQL (Azure ou local)"
@@ -208,7 +208,7 @@ if [ -f "scripts/marketplace-api-key.sh" ]; then
     echo ""
     print_info "Pour configurer les credentials Marketplace, exécutez:"
     echo -e "   ${CYAN}./scripts/marketplace-api-key.sh -C -n 'chatbottez-marketplace' -o marketplace.env${NC}"
-    echo -e "   Puis copiez les valeurs dans .env.local"
+    echo -e "   Puis copiez les valeurs dans env/.env.local"
     echo ""
     
     read -p "Voulez-vous exécuter le script marketplace maintenant? (y/N): " -r
@@ -216,7 +216,7 @@ if [ -f "scripts/marketplace-api-key.sh" ]; then
         chmod +x scripts/marketplace-api-key.sh
         if ./scripts/marketplace-api-key.sh -C -n 'chatbottez-marketplace' -o marketplace.env; then
             print_success "Configuration Marketplace terminée"
-            print_info "Vérifiez marketplace.env et copiez les valeurs vers .env.local"
+            print_info "Vérifiez marketplace.env et copiez les valeurs vers env/.env.local"
         else
             print_warn "Échec de la configuration Marketplace"
         fi
@@ -248,7 +248,7 @@ else
     print_info "Pour configurer Azure Database, voir la documentation"
 fi
 
-# Function to validate .env.local file
+# Function to validate env/.env.local file
 validate_env_file() {
     local missing_vars=()
     local configured_vars=()
@@ -257,8 +257,8 @@ validate_env_file() {
     local critical_vars=("TENANT_ID" "JWT_SECRET_KEY")
     
     for var in "${critical_vars[@]}"; do
-        if grep -q "^${var}=" .env.local; then
-            local value=$(grep "^${var}=" .env.local | cut -d'=' -f2)
+        if grep -q "^${var}=" env/.env.local; then
+            local value=$(grep "^${var}=" env/.env.local | cut -d'=' -f2)
             if [[ "$value" != *"your-"* ]] && [ -n "$value" ]; then
                 configured_vars+=("$var")
             else
@@ -297,7 +297,7 @@ validate_env_file
 echo ""
 print_header "🚀 Prochaines étapes:"
 echo ""
-echo -e "${CYAN}1.${NC} Éditer .env.local pour compléter les variables manquantes"
+echo -e "${CYAN}1.${NC} Éditer env/.env.local pour compléter les variables manquantes"
 echo -e "${CYAN}2.${NC} Installer les dépendances: ${GREEN}npm install${NC}"
 echo -e "${CYAN}3.${NC} Tester l'application: ${GREEN}npm run dev${NC}"
 echo -e "${CYAN}4.${NC} Configurer la base de données (voir documentation)"

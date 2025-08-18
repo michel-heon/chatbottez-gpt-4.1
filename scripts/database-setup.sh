@@ -38,15 +38,15 @@ echo -e "${CYAN}================================================================
 echo -e "${CYAN}Database Setup for Microsoft Marketplace Quota Management${NC}"
 echo -e "${CYAN}=================================================================${NC}"
 
-# Check if .env.local exists
-if [ ! -f ".env.local" ]; then
-    print_error ".env.local file not found. Please run environment setup first."
+# Check if env/.env.local exists
+if [ ! -f "env/.env.local" ]; then
+    print_error "env/.env.local file not found. Please run environment setup first."
     exit 1
 fi
 
 # Load environment variables
 set -a
-source .env.local
+source env/.env.local
 set +a
 
 # Default values
@@ -84,7 +84,7 @@ check_postgresql() {
         print_success "Database connection successful"
     else
         print_error "Cannot connect to database"
-        print_info "Please check your credentials in .env.local"
+        print_info "Please check your credentials in env/.env.local"
         exit 1
     fi
 }
@@ -146,29 +146,29 @@ verify_installation() {
     fi
 }
 
-# Function to update .env.local with database URL
+# Function to update env/.env.local with database URL
 update_env() {
-    print_step "7" "Updating .env.local with DATABASE_URL..."
+    print_step "7" "Updating env/.env.local with DATABASE_URL..."
     
     # Extract password from current DATABASE_URL or use env var
     if [ -n "$DB_PASSWORD" ]; then
         PASSWORD="$DB_PASSWORD"
     else
-        print_error "DB_PASSWORD not set in .env.local"
+        print_error "DB_PASSWORD not set in env/.env.local"
         read -s -p "Enter database password: " PASSWORD
         echo ""
     fi
     
     NEW_DATABASE_URL="postgresql://$DB_USER:$PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME"
     
-    # Update .env.local
-    if grep -q "^DATABASE_URL=" .env.local; then
-        sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|" .env.local
+    # Update env/.env.local
+    if grep -q "^DATABASE_URL=" env/.env.local; then
+        sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|" env/.env.local
     else
-        echo "DATABASE_URL=$NEW_DATABASE_URL" >> .env.local
+        echo "DATABASE_URL=$NEW_DATABASE_URL" >> env/.env.local
     fi
     
-    print_success "DATABASE_URL updated in .env.local"
+    print_success "DATABASE_URL updated in env/.env.local"
 }
 
 # Main execution
@@ -195,5 +195,5 @@ echo "1. Test the connection: npm run test:db"
 echo "2. Start the application: npm run dev"
 echo "3. Check the logs for any connection issues"
 echo ""
-print_info "Database URL configured in .env.local"
+print_info "Database URL configured in env/.env.local"
 print_warn "Make sure your database server is running and accessible"
