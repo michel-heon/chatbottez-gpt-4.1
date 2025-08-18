@@ -3,7 +3,7 @@
 # Orchestration des scripts de déploiement et configuration
 # =================================================================
 
-.PHONY: help setup deploy configure validate deploy-bicep deploy-dev03 deploy-dev04 deploy-dev05 clean test-config test-db status-deployment all
+.PHONY: help setup deploy configure validate clean test-config test-db status status-deployment deploy-dev06 deploy-app-dev06 deploy-dev06-full check-deps all
 
 # Configuration
 SCRIPTS_DIR := scripts
@@ -30,12 +30,10 @@ help:
 	@echo "$(YELLOW)🎯 COMMANDES PRINCIPALES:$(NC)"
 	@echo ""
 	@echo "  $(GREEN)make setup$(NC)        - 🔧 Configuration initiale complète"
-	@echo "  $(GREEN)make deploy$(NC)       - 🚀 Déploiement Azure infrastructure"
-	@echo "  $(GREEN)make deploy-bicep$(NC) - 🏗️  Déploiement infrastructure complète (Bicep)"
-	@echo "  $(GREEN)make deploy-dev03$(NC) - 🆕 Déploiement nouveau groupe dev-03 (complet)"
-	@echo "  $(GREEN)make deploy-dev04$(NC) - 🆕 Déploiement nouveau groupe dev-04 (complet)"
-	@echo "  $(GREEN)make deploy-dev05$(NC) - 🆕 Déploiement nouveau groupe dev-05 (complet)"
-	@echo "  $(GREEN)make deploy-app-dev05$(NC) - 🚀 Déployer l'application vers dev-05"
+	@echo "  $(GREEN)make deploy$(NC)       - 🚀 Déploiement Azure infrastructure (legacy)"
+	@echo "  $(GREEN)make deploy-dev06$(NC) - 🆕 Déploiement infrastructure dev-06 (recommandé)"
+	@echo "  $(GREEN)make deploy-app-dev06$(NC) - 🚀 Déployer l'application vers dev-06"
+	@echo "  $(GREEN)make deploy-dev06-full$(NC) - 🎯 Déploiement complet DEV-06 (infra + app)"
 	@echo "  $(GREEN)make configure$(NC)    - ⚙️  Configuration post-déploiement"
 	@echo "  $(GREEN)make validate$(NC)     - ✅ Validation complète du système"
 	@echo "  $(GREEN)make all$(NC)          - 🎉 Processus complet (setup + deploy + configure + validate)"
@@ -44,21 +42,20 @@ help:
 	@echo ""
 	@echo "  $(GREEN)make test-config$(NC)  - 🧪 Tester la configuration"
 	@echo "  $(GREEN)make test-db$(NC)      - 💾 Tester la connexion base de données"
-	@echo "  $(GREEN)make status-deployment$(NC) - 📊 Vérifier l'état des déploiements"
-	@echo "  $(GREEN)make clean$(NC)        - 🧹 Nettoyer les fichiers temporaires"
 	@echo "  $(GREEN)make status$(NC)       - 📊 Afficher le statut du système"
-	@echo "  $(GREEN)make components$(NC)   - 📋 Afficher les composants Azure"
-	@echo ""
-	@echo "$(YELLOW)📋 COMMANDES INDIVIDUELLES:$(NC)"
-	@echo ""
-	@echo "  $(GREEN)make environment$(NC)  - 🌍 Configuration environnement seulement"
-	@echo "  $(GREEN)make database$(NC)     - 💾 Configuration base de données seulement"
-	@echo "  $(GREEN)make marketplace$(NC)  - 💼 Configuration Marketplace API seulement"
+	@echo "  $(GREEN)make status-deployment$(NC) - 📊 Vérifier l'état des déploiements"
+	@echo "  $(GREEN)make check-deps$(NC)   - 🔍 Vérifier les dépendances système"
+	@echo "  $(GREEN)make clean$(NC)        - 🧹 Nettoyer les fichiers temporaires"
 	@echo ""
 	@echo "$(YELLOW)ℹ️  PRÉREQUIS:$(NC)"
 	@echo "  - Azure CLI installé et connecté (az login)"
 	@echo "  - Node.js et npm installés"
 	@echo "  - WSL/Bash disponible"
+	@echo ""
+	@echo "$(YELLOW)💡 DÉPLOIEMENT RECOMMANDÉ:$(NC)"
+	@echo "  1. $(GREEN)make deploy-dev06-full$(NC) pour un déploiement complet"
+	@echo "  2. Configuration manuelle des variables d'environnement via Azure Portal"
+	@echo "  3. $(GREEN)make status$(NC) pour vérifier l'état"
 	@echo ""
 
 ## all: 🎉 Processus de déploiement complet
@@ -130,35 +127,17 @@ validate:
 	@chmod +x $(SCRIPTS_DIR)/deployment-validate.sh
 	@$(SCRIPTS_DIR)/deployment-validate.sh
 
-## deploy-bicep: 🏗️ Déploiement infrastructure complète avec Bicep
-deploy-bicep:
-	@echo "$(CYAN)Déploiement infrastructure complète avec Bicep...$(NC)"
-	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure.sh
-	@$(SCRIPTS_DIR)/deploy-complete-infrastructure.sh
+## deploy-dev06: 🆕 Déploiement infrastructure dev-06 (clean redeploy)
+deploy-dev06:
+	@echo "$(CYAN)Déploiement infrastructure vers dev-06 (redéploiement propre)...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-infrastructure-dev06.sh
+	@$(SCRIPTS_DIR)/deploy-infrastructure-dev06.sh
 
-## deploy-dev03: 🆕 Déploiement nouveau groupe dev-03 complet
-deploy-dev03:
-	@echo "$(CYAN)Déploiement infrastructure complète vers dev-03...$(NC)"
-	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev03.sh
-	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev03.sh
-
-## deploy-dev04: 🆕 Déploiement nouveau groupe dev-04 complet
-deploy-dev04:
-	@echo "$(CYAN)Déploiement infrastructure complète vers dev-04...$(NC)"
-	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev04.sh
-	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev04.sh
-
-## deploy-dev05: 🆕 Déploiement nouveau groupe dev-05 complet
-deploy-dev05:
-	@echo "$(CYAN)Déploiement infrastructure complète vers dev-05...$(NC)"
-	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev05.sh
-	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev05.sh
-
-## deploy-app-dev05: 🚀 Déployer l'application vers dev-05
-deploy-app-dev05:
-	@echo "$(CYAN)Déploiement de l'application vers dev-05...$(NC)"
-	@chmod +x $(SCRIPTS_DIR)/deploy-app-dev05.sh
-	@$(SCRIPTS_DIR)/deploy-app-dev05.sh
+## deploy-app-dev06: 🚀 Déployer l'application vers dev-06
+deploy-app-dev06:
+	@echo "$(CYAN)Déploiement de l'application vers dev-06...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-app-dev06.sh
+	@$(SCRIPTS_DIR)/deploy-app-dev06.sh
 
 ## test-config: 🧪 Tester la configuration
 test-config:
@@ -253,78 +232,22 @@ status:
 	@az group list --query "[?contains(name, 'chatbottez')].{Name:name, Location:location}" --output table 2>/dev/null || echo "  ❌ Erreur lors de la récupération"
 	@echo ""
 
-## info: ℹ️ Informations sur l'architecture
-info:
-	@echo ""
-	@echo "$(CYAN)=================================================================$(NC)"
-	@echo "$(CYAN)ℹ️  INFORMATIONS ARCHITECTURE$(NC)"
-	@echo "$(CYAN)=================================================================$(NC)"
-	@echo ""
-	@echo "$(YELLOW)🏗️  Composants principaux:$(NC)"
-	@echo "  • Microsoft Teams Bot (Teams AI Library)"
-	@echo "  • Azure API Management (Quota enforcement)"
-	@echo "  • PostgreSQL Database (Azure Flexible Server)"
-	@echo "  • Azure Key Vault (Secrets management)"
-	@echo "  • Marketplace Integration (SaaS + Metering)"
-	@echo ""
-	@echo "$(YELLOW)📋 Scripts disponibles:$(NC)"
-	@ls -1 $(SCRIPTS_DIR)/*.sh | sed 's/^/  • /'
-	@echo ""
-	@echo "$(YELLOW)📖 Documentation:$(NC)"
-	@echo "  • Diagramme: docs/architecture-diagram.drawio"
-	@echo "  • Composants Azure: docs/azure-components.md"
-	@echo "  • Déploiement: DEPLOYMENT_SUMMARY.md"
-	@echo "  • Migration: MIGRATION_COMPLETED.md"
-	@echo ""
-
-## components: 📋 Afficher la liste des composants Azure
-components:
-	@echo ""
-	@echo "$(CYAN)=================================================================$(NC)"
-	@echo "$(CYAN)📋 COMPOSANTS AZURE$(NC)"
-	@echo "$(CYAN)=================================================================$(NC)"
-	@echo ""
-	@if [ -f "docs/azure-components.md" ]; then \
-		echo "$(GREEN)📄 Documentation complète disponible dans: docs/azure-components.md$(NC)"; \
-		echo ""; \
-		echo "$(YELLOW)✅ Composants déployés:$(NC)"; \
-		echo "  • Resource Group (rg-chatbottez-gpt-4-1-dev-02)"; \
-		echo "  • PostgreSQL Flexible Server"; \
-		echo "  • Key Vault"; \
-		echo ""; \
-		echo "$(YELLOW)🔄 Composants à déployer (Priorité Haute):$(NC)"; \
-		echo "  • Bot Service"; \
-		echo "  • App Service Plan"; \
-		echo "  • App Service (Node.js)"; \
-		echo "  • Application Registration"; \
-		echo ""; \
-		echo "$(YELLOW)🔄 Composants à déployer (Priorité Moyenne):$(NC)"; \
-		echo "  • API Management"; \
-		echo "  • Application Insights"; \
-		echo "  • Storage Account"; \
-		echo "  • Marketplace SaaS Offer"; \
-		echo ""; \
-		echo "$(CYAN)💰 Coût estimé total: ~110.50 CAD/mois$(NC)"; \
-		echo "$(CYAN)📖 Voir le détail complet: docs/azure-components.md$(NC)"; \
-	else \
-		echo "$(RED)❌ Documentation des composants non trouvée$(NC)"; \
-	fi
-	@echo ""
-
 # ==================================================================
 # 🎛️ COMMANDES AVANCÉES
 # ==================================================================
 
-## dev-setup: 🧑‍💻 Configuration rapide pour développement
-dev-setup: environment test-config
-	@echo "$(GREEN)✅ Configuration développement prête!$(NC)"
-	@echo "$(YELLOW)Pour démarrer: $(GREEN)npm run dev$(NC)"
-
-## prod-deploy: 🏭 Déploiement production (avec validation)
-prod-deploy: setup deploy configure validate
+## deploy-dev06-full: 🎯 Déploiement complet DEV-06 (infrastructure + application)
+deploy-dev06-full: deploy-dev06 deploy-app-dev06
 	@echo ""
-	@echo "$(GREEN)🏭 Déploiement production terminé!$(NC)"
-	@echo "$(YELLOW)⚠️  N'oubliez pas de configurer le monitoring en production$(NC)"
+	@echo "$(GREEN)🎉 DÉPLOIEMENT COMPLET DEV-06 TERMINÉ!$(NC)"
+	@echo ""
+	@echo "$(CYAN)🚀 Votre système DEV-06 est maintenant déployé!$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Prochaines étapes:$(NC)"
+	@echo "  1. Vérifier l'application: $(GREEN)make status$(NC)"
+	@echo "  2. Configurer les variables d'environnement via Azure Portal"
+	@echo "  3. Tester les fonctionnalités Microsoft Teams"
+	@echo ""
 
 ## check-deps: 🔍 Vérifier les dépendances
 check-deps:

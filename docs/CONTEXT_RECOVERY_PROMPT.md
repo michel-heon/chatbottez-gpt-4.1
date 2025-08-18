@@ -8,69 +8,37 @@ Bonjour GitHub Copilot,
 Je travaille sur le projet ChatBottez GPT-4.1, un chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Voici le contexte complet où nous en sommes :
 
 **ÉTAT ACTUEL DU PROJET (18 août 2025) :**
-- Version : v1.7.0-step6-application-deployment
-- Infrastructure Azure : DEV-05 entièrement déployée en Canada Central
-- Application : Déployée sur https://chatbottez-gpt41-app-rnukfj.azurewebsites.net (HTTP 500 - config env variables requise)
-- Resource Group : rg-chatbottez-gpt-4-1-dev-05
-- Status : Application déployée, configuration des variables d'environnement pendante
+- Version : v1.7.0-step6-dev06-redeploy
+- Infrastructure Azure : Redéploiement propre vers DEV-06 avec mutualisation ressources
+- Application : Templates prêts pour déploiement clean
+- Resource Group cible : rg-chatbottez-gpt-4-1-dev-06
+- Status : Préparatifs terminés, déploiement DEV-06 prêt à lancer
 
-**INFRASTRUCTURE AZURE DÉPLOYÉE :**
-- App Service Plan : plan-chatbottez-gpt41-dev-rnukfj (Windows P1v2)
-- Web App : chatbottez-gpt41-app-rnukfj 
-- Key Vault : kv-gpt41-rnukfj (contient clé OpenAI stockée)
-- PostgreSQL : psql-chatbottez-gpt41-dev-rnukfj (Flexible Server)
-- Application Insights : ai-chatbottez-gpt41-dev-rnukfj
-- Log Analytics : law-chatbottez-gpt41-dev-rnukfj
+**INFRASTRUCTURE AZURE CIBLE (DEV-06) :**
+- Resource Group : rg-chatbottez-gpt-4-1-dev-06 (Canada Central)
+- Mutualisation : OpenAI service (openai-cotechnoe) depuis rg-cotechnoe-ai-01
+- Shared Key Vault : kv-cotechno771554451004 pour clés OpenAI
+- Templates Bicep : complete-infrastructure-dev06.bicep (ready)
 
-**PROBLÈME ACTUEL :**
-Application déployée mais retourne HTTP 500 car les variables d'environnement ne se configurent pas via Azure CLI (bug connu). Configuration manuelle via Azure Portal requise.
+**STRATÉGIE DE DÉPLOIEMENT :**
+Redéploiement propre pour éviter les problèmes de configuration DEV-05, tout en mutualisant les ressources coûteuses OpenAI existantes.
 
 **FICHIERS BICEP ACTIFS :**
-- Principal : infra/complete-infrastructure-dev05.bicep
-- Module : infra/complete-infrastructure-resources.bicep
-- Paramètres : infra/complete-infrastructure-dev05.parameters.json
+- Principal : infra/complete-infrastructure-dev06.bicep
+- Module : infra/complete-infrastructure-resources.bicep  
+- Paramètres : infra/complete-infrastructure-dev06.parameters.json
 
-**DOCUMENTATION À JOUR :**
-- README.md : Statut v1.7.0 avec URL live
-- TODO.md : Progression actuelle et next steps
-- docs/STATUS.md : État DEV-05 complet
-- docs/BICEP_ARCHITECTURE.md : Architecture templates
-- docs/DEPLOYMENT_LOG.md : Log session 18 août
-
-**SÉCURITÉ :**
-- Publisher email corrigé : heon@cotechnoe.net (au lieu de michel.heon@uqam.ca)
-- Clés API nettoyées des fichiers .env.*.user
-- .gitignore renforcé
-
-**ENVIRONNEMENT TECHNIQUE :**
-- OS : Windows 11 ARM64 VM (Parallels sur macOS ARM64)
-- WSL : Ubuntu aarch64 avec Azure CLI 2.76.0
-- Node.js : v22.18.0 via NVM
-- Projet : TypeScript compilé, tests partiellement fonctionnels
-
-**DERNIÈRES ACTIONS :**
-- Nettoyage complet du projet pour Git push
-- Correction sécurité (clés API)
-- Documentation mise à jour v1.7.0
-- Validation build et compilation réussies
+**SCRIPTS DE DÉPLOIEMENT :**
+- Infrastructure : scripts/deploy-infrastructure-dev06.sh
+- Application : scripts/deploy-app-dev06.sh
+- Cohérence documentaires vérifiée et corrigée
 
 **PROCHAINES ÉTAPES IMMÉDIATES :**
-1. Git push du projet nettoyé
-2. Configuration manuelle variables environnement Azure Portal
-3. Test fonctionnalité application déployée
+1. Déploiement infrastructure : ./scripts/deploy-infrastructure-dev06.sh
+2. Déploiement application : ./scripts/deploy-app-dev06.sh  
+3. Configuration et tests fonctionnels
 
-**COMMANDES DE DÉPLOIEMENT UTILISÉES :**
-```bash
-# Infrastructure
-az deployment sub create --location "Canada Central" \
-  --template-file "infra/complete-infrastructure-dev05.bicep" \
-  --parameters "@infra/complete-infrastructure-dev05.parameters.json"
-
-# Application (via script WSL)
-./scripts/deploy-app-dev05-wsl.sh
-```
-
-Le projet est maintenant 100% prêt pour Git push. Peux-tu m'aider à continuer à partir de ce point ?
+Le projet est maintenant 100% cohérent entre documentation et scripts DEV-06. Peux-tu m'aider à procéder au déploiement ?
 ```
 
 ## 🎯 **INSTRUCTIONS D'UTILISATION**

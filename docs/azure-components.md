@@ -1,21 +1,21 @@
 # 📋 Composants Azure - Microsoft Marketplace Quota Management System
 
-> **Date de mise à jour:** 17 août 2025  
+> **Date de mise à jour:** 18 août 2025  
 > **Projet:** ChatBottez GPT-4.1  
-> **Environnement:** Development (rg-chatbottez-gpt-4-1-dev-02)
+> **Environnement:** Development DEV-06 (rg-chatbottez-gpt-4-1-dev-06)
 
 ## 🎯 Vue d'ensemble
 
-Ce document liste tous les composants Azure nécessaires pour le projet Microsoft Teams Bot avec gestion des quotas Marketplace. Les composants sont organisés par catégorie et statut de déploiement.
+Ce document liste tous les composants Azure nécessaires pour le projet Microsoft Teams Bot avec gestion des quotas Marketplace. Configuration pour déploiement DEV-06 avec mutualisation de ressources OpenAI partagées.
 
 ---
 
-## ✅ Composants Déployés
+## 🔄 Composants À Déployer (DEV-06)
 
 ### 🏢 Gestion des Ressources
 | Composant | Type | Nom | Statut | Description |
 |-----------|------|-----|---------|-------------|
-| **Resource Group** | `Microsoft.Resources/resourceGroups` | `rg-chatbottez-gpt-4-1-dev-02` | ✅ Déployé | Groupe de ressources principal pour l'environnement de développement |
+| **Resource Group** | `Microsoft.Resources/resourceGroups` | `rg-chatbottez-gpt-4-1-dev-06` | 🔄 À déployer | Groupe de ressources principal pour l'environnement DEV-06 |
 
 ### 💾 Base de Données
 | Composant | Type | Nom | Statut | Description |

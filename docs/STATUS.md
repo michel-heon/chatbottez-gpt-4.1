@@ -1,22 +1,22 @@
-# 📋 Statut Projet ChatBottez GPT-4.1 - Version v1.7.0-step6-application-deployment
+# 📋 Statut Projet ChatBottez GPT-4.1 - Version v1.7.0-step6-dev06-redeploy
 
 ## 🎯 Vue d'ensemble Générale
 
-**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet a atteint la phase d'**infrastructure Azure complètement déployée** avec application déployée mais nécessitant une configuration finale.
+**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet est en phase de **redéploiement propre vers DEV-06** avec mutualisation des ressources partagées.
 
-**Status actuel** : ✅ Infrastructure complète déployée - ⚠️ Application déployée mais configuration en cours
+**Status actuel** : 🔄 Redéploiement DEV-06 en cours - Templates prêts pour déploiement
 
 ---
 
 ## 📊 État des Composants Principaux
 
-### ✅ Infrastructure Azure (Infrastructure Complète - DEV-05)
+### ✅ Infrastructure Azure (Infrastructure Cible - DEV-06)
 
 | Composant | Status | Détails |
 |-----------|--------|---------|
-| **PostgreSQL Flexible Server** | ✅ Déployé | • Version PostgreSQL 16<br>• SKU Standard_B1ms<br>• Base `marketplace_quota` créée<br>• Utilisateurs admin/app configurés |
-| **Azure Key Vault** | ✅ Déployé | • Nom: `kv-gpt41-rnukfj`<br>• Secrets OpenAI stockés<br>• Permissions configurées<br>• Accès application validé |
-| **Resource Group** | ✅ Déployé | • `rg-chatbottez-gpt-4-1-dev-05`<br>• Canada Central<br>• Tags appliqués |
+| **PostgreSQL Flexible Server** | 🔄 À déployer | • Version PostgreSQL 16<br>• SKU Standard_B1ms<br>• Base `marketplace_quota` à créer<br>• Resource Group: rg-chatbottez-gpt-4-1-dev-06 |
+| **Azure Key Vault** | 🔄 À déployer | • Nouveau Key Vault local<br>• Secrets OpenAI référencés<br>• Permissions configurées<br>• Accès application à valider |
+| **Resource Group** | 🔄 Target DEV-06 | • `rg-chatbottez-gpt-4-1-dev-06`<br>• Canada Central<br>• Tags appliqués<br>• Mutualisation avec rg-cotechnoe-ai-01 |
 | **Azure App Service** | ✅ Déployé | • Nom: `chatbottez-gpt41-app-rnukfj`<br>• Plan Windows Basic B1<br>• SSL/HTTPS activé |
 | **Application Insights** | ✅ Déployé | • Nom: `chatbottez-gpt41-ai-rnukfj`<br>• Monitoring configuré<br>• Télémétrie intégrée |
 

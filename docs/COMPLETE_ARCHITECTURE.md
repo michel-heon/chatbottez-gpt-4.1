@@ -378,5 +378,5 @@ TEAMS_APP_ID=your-teams-app-id
 ---
 
 **Dernière mise à jour** : 18 août 2025  
-**Version** : v1.6.0-step5-wsl-validation  
-**Prochaine étape** : v1.7.0-step6-application-deployment
+**Version** : v1.7.0-step6-dev06-redeploy  
+**Prochaine étape** : Déploiement infrastructure DEV-06 avec mutualisation
