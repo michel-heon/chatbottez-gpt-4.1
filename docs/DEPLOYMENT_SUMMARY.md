@@ -95,7 +95,7 @@ make validate      # deployment-validate.sh (15 tests)
 ### Fichier `.env.local` Mis à Jour
 ```bash
 # Azure Database Configuration (Auto-generated)
-DATABASE_URL=postgresql://marketplace_user:App@User123!Strong@gpt-4-1-postgres-dev-rdazbuglrttd6.postgres.database.azure.com:5432/marketplace_quota?sslmode=require
+DATABASE_URL=postgresql://marketplace_user:App@User123!${GENERATED_SUFFIX}@gpt-4-1-postgres-dev-rdazbuglrttd6.postgres.database.azure.com:5432/marketplace_quota?sslmode=require
 AZURE_DATABASE_SERVER=gpt-4-1-postgres-dev-rdazbuglrttd6.postgres.database.azure.com
 AZURE_DATABASE_NAME=marketplace_quota
 AZURE_KEY_VAULT_NAME=kvgpt41devrdazbuglrttd6

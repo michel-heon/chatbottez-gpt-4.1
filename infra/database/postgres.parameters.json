@@ -15,7 +15,7 @@
       "value": "pgadmin"
     },
     "administratorPassword": {
-      "value": "P@ssw0rd123!Strong"
+      "value": "P@ssw0rd123!Admin${uniqueString(resourceGroup().id)}"
     },
     "skuName": {
       "value": "Standard_B1ms"
@@ -45,7 +45,7 @@
       "value": "marketplace_user"
     },
     "appUserPassword": {
-      "value": "App@User123!Strong"
+      "value": "App@User123!${uniqueString(resourceGroup().id)}"
     }
   }
 }
