@@ -96,13 +96,13 @@ module resources 'complete-infrastructure-resources.bicep' = {
     location: location
     resourceBaseName: resourceBaseName
     environment: environment
-    uniqueSuffix: uniqueSuffix
     
     // PostgreSQL parameters
     postgresServerName: postgresServerName
     postgresAdminLogin: postgresAdminLogin
     postgresAdminPassword: postgresAdminPassword
     quotaDatabaseName: quotaDatabaseName
+    appDatabaseUser: 'marketplace_user'
     
     // Key Vault parameters
     keyVaultName: keyVaultName
@@ -123,8 +123,9 @@ module resources 'complete-infrastructure-resources.bicep' = {
     // Shared resources (from rg-cotechnoe-ai-01)
     sharedOpenAIEndpoint: sharedOpenAIEndpoint
     sharedOpenAIDeploymentName: sharedOpenAIDeploymentName
-    sharedOpenAIResourceId: sharedOpenAI.id
-    sharedKeyVaultResourceId: sharedKeyVault.id
+    sharedResourceGroupName: sharedResourceGroupName
+    sharedOpenAIName: sharedOpenAIName
+    sharedKeyVaultName: sharedKeyVaultName
   }
 }
 

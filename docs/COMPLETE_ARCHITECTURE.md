@@ -1,11 +1,25 @@
-# Architecture Complète - ChatBottez GPT-4.1
-## Du Client à l'Infrastructure
+# Architecture Complète - ChatBottez GPT-4.1 (DEV-06)
+## Du Client à l'Infrastructure Hybride
 
 ## 📋 Vue d'ensemble
 
-Ce diagramme présente l'**architecture complète end-to-end** du système ChatBottez GPT-4.1, depuis l'utilisateur final dans Microsoft Teams jusqu'à l'infrastructure Azure backend, en passant par l'intelligence artificielle et la gestion des quotas Marketplace.
+**Version :** v1.8.0-step7-dev06-consistency
+**Architecture :** Hybride avec mutualisation optimisée des ressources
 
-## 🏗️ Architecture en Couches
+Ce document présente l'**architecture complète end-to-end** du système ChatBottez GPT-4.1 version DEV-06, depuis l'utilisateur final dans Microsoft Teams jusqu'à l'infrastructure Azure hybride, incluant la stratégie de mutualisation des ressources coûteuses (OpenAI, Key Vault partagé).
+
+## 🏗️ Architecture Hybride DEV-06
+
+### 🔗 **Stratégie de Mutualisation**
+```
+┌─ rg-chatbottez-gpt-4-1-dev-06 ────┐   ┌─ rg-cotechnoe-ai-01 (Partagé) ─┐
+│  • PostgreSQL                     │◄──┤  • OpenAI Service (gpt-4o)      │
+│  • App Service                    │   │  • Key Vault (secrets OpenAI)   │
+│  • Key Vault (local)              │   │  • Coût mutualisé               │
+│  • APIM + Monitoring              │   └──────────────────────────────────┘
+│  • Managed Identity               │
+└────────────────────────────────────┘
+```
 
 ### 👥 **Couche Client** - Microsoft Teams Users
 
@@ -17,35 +31,30 @@ Ce diagramme présente l'**architecture complète end-to-end** du système ChatB
 #### **Expérience Utilisateur**
 - **Interface conversationnelle** : Chat naturel avec le bot
 - **Gestion de quota** : Affichage en temps réel (X/300 questions restantes)
-- **Feedback instantané** : Réponses rapides et contextuelles
+- **Feedback instantané** : Réponses rapides et contextuelles via OpenAI partagé
 - **Multi-plateforme** : Expérience cohérente sur tous les appareils
-
-#### **Personas d'Utilisateurs**
-- **Enterprise Users** : Employés utilisant Teams quotidiennement
-- **Developers** : Intégration dans workflows de développement
-- **Business Analysts** : Analyse de données et reporting
-- **Content Creators** : Génération de contenu et assistance rédactionnelle
 
 #### **Intégration Marketplace**
 - **Microsoft Commercial Marketplace** : Modèle SaaS avec abonnement mensuel
-- **Plan de base** : 300 questions/mois par utilisateur
+- **Plan recommandé** : 35-40$/mois (analyse coûts OpenAI incluse)
+- **Quota par défaut** : 300 questions/mois par utilisateur
 - **Billing automatique** : Facturation Microsoft directe
 - **Partner Center** : Gestion des offres et analytics
-- **Teams Admin Center** : Déploiement et policies d'entreprise
 
 ---
 
-### 🤖 **Couche Application** - ChatBottez GPT-4.1 Bot
+### 🤖 **Couche Application** - ChatBottez GPT-4.1 Bot (DEV-06)
 
 #### **Bot Framework & Runtime**
 - **Microsoft Bot Framework** : SDK et services de base
 - **Teams AI Library** : Extensions spécialisées Teams
 - **Express.js Server** : Runtime Node.js sur port 3978
-- **Auto-scaling** : Adaptation automatique à la charge
+- **App Service Plan** : S1 Standard (auto-scaling disponible)
+- **URL** : `https://chatbottez-gpt41-app-{unique}.azurewebsites.net`
 
-#### **Stack Middleware**
+#### **Stack Middleware & Architecture**
 ```
-📨 Request → 🛡️ Quota Check → 🔐 Auth → 📊 Audit → 🎯 Business Logic → 📤 Response
+📨 Request → 🛡️ Quota Check (APIM) → 🔐 Auth (MI) → 📊 Audit → 🤖 OpenAI (Partagé) → 📤 Response
 ```
 
 **🛡️ Quota Usage Middleware**

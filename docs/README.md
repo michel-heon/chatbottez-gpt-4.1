@@ -4,139 +4,136 @@
 
 **ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas intégrée au Microsoft Commercial Marketplace. Le projet implémente une architecture complète du client Teams jusqu'à l'infrastructure Azure, avec intelligence artificielle via Azure OpenAI.
 
-**Version actuelle** : `v1.7.0-step6-application-deployment`  
-**Status** : Infrastructure Azure déployée ✅ - Application déployée ✅ - Configuration finale ⚠️
+**Version actuelle** : `v1.8.0-step7-dev06-consistency`  
+**Status** : Infrastructure hybride DEV-06 prête ✅ - Déploiement automatisé ✅ - Ready to deploy 🚀
 
 ## 🚀 Guide de Démarrage Rapide
 
 ### Pour les nouveaux utilisateurs
-1. 📖 **[README.md](../README.md)** - Vue d'ensemble et quick start
-2. 🚀 **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** - Guide complet du Makefile (RECOMMANDÉ)
-3. ✅ **[TODO.md](../TODO.md)** - État actuel et prochaines étapes
-4. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - 🆕 Architecture complète end-to-end
+1. 📖 **[README.md](../README.md)** - Vue d'ensemble et quick start v1.8.0
+2. 🚀 **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** - 🆕 Guide de déploiement DEV-06 (RECOMMANDÉ)
+3. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - Architecture hybride avec mutualisation
+4. 🔧 **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** - Guide complet du Makefile optimisé
 
-### Pour le déploiement
-1. 🏗️ **[DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md)** - Résumé du déploiement Azure (15/15 ✅)
-2. � **[AZURE_INFRASTRUCTURE.md](AZURE_INFRASTRUCTURE.md)** - 🆕 Infrastructure Azure déployée
-3. �🔄 **[MIGRATION_COMPLETED.md](MIGRATION_COMPLETED.md)** - Migration PowerShell → Bash
+### Pour le déploiement immédiat
+```bash
+# Déploiement complet en une commande
+make deploy-dev06-full
+```
+
+1. � **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** - 🆕 Guide complet DEV-06
+2. ✅ **[STATUS.md](STATUS.md)** - État v1.8.0 et architecture hybride
+3. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - Architecture avec mutualisation des ressources
 
 ---
 
-## � Diagrammes d'Architecture
+## 🏗️ Diagrammes d'Architecture DEV-06
 
-### 🆕 Nouveaux Diagrammes Complets
+### 🆕 Architecture Hybride avec Mutualisation
 | Diagramme | Description | Format |
 |-----------|-------------|--------|
-| **[complete-architecture-diagram.drawio](complete-architecture-diagram.drawio)** | 🆕 **Architecture complète Client-to-Infrastructure** | Draw.io |
-| **[azure-infrastructure-diagram.drawio](azure-infrastructure-diagram.drawio)** | 🆕 **Infrastructure Azure déployée** | Draw.io |
-| **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** | 🆕 **Documentation architecture complète** | Markdown |
-| **[AZURE_INFRASTRUCTURE.md](AZURE_INFRASTRUCTURE.md)** | 🆕 **Documentation infrastructure Azure** | Markdown |
+| **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** | 🆕 **Guide complet déploiement DEV-06** | Guide |
+| **[complete-architecture-diagram.drawio](complete-architecture-diagram.drawio)** | Architecture hybride avec ressources partagées | Draw.io |
+| **[azure-infrastructure-diagram.drawio](azure-infrastructure-diagram.drawio)** | Infrastructure Azure détaillée | Draw.io |
 
-### Diagrammes Existants
-| Diagramme | Description | Status |
-|-----------|-------------|--------|
-| **[architecture-diagram.drawio](architecture-diagram.drawio)** | Architecture système original (référence) | ✅ Historique |
+### Architecture DEV-06 : Ressources
+```
+📦 rg-chatbottez-gpt-4-1-dev-06 (Nouvelles)
+├── 🔐 Managed Identity + PostgreSQL + Key Vault Local
+├── 🚀 App Service S1 + Application Insights
+└── 🛡️ API Management Developer
+
+📦 rg-cotechnoe-ai-01 (Partagées - optimisation coûts)
+├── 🤖 OpenAI Service (gpt-4o)
+└── 🔐 Key Vault Partagé
+```
 
 ---
 
-## � Documentation par Catégorie
+## 📚 Documentation par Catégorie
 
 ### 🏗️ Infrastructure et Déploiement
 
 | Document | Description | Statut |
 |----------|-------------|---------|
-| **[AZURE_INFRASTRUCTURE.md](AZURE_INFRASTRUCTURE.md)** | 🆕 **Infrastructure Azure complète** | ✅ Nouveau |
-| **[BICEP_ARCHITECTURE.md](BICEP_ARCHITECTURE.md)** | 🆕 **Architecture des templates Bicep** | ✅ Nouveau |
-| **[DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md)** | Résumé déploiement (15/15 validations ✅) | ✅ À jour |
-| **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** | Guide complet du Makefile avec exemples | ✅ À jour |
-| **[azure-components.md](azure-components.md)** | Composants Azure déployés | ✅ À jour |
-| **[INSTALL_POSTGRESQL.md](INSTALL_POSTGRESQL.md)** | Guide PostgreSQL (local vs Azure) | ✅ À jour |
+| **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** | 🆕 **Guide déploiement DEV-06 complet** | ✅ Nouveau |
+| **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** | Architecture hybride avec mutualisation | ✅ Mis à jour |
+| **[STATUS.md](STATUS.md)** | Statut v1.8.0 et progress DEV-06 | ✅ Mis à jour |
+| **[BICEP_ARCHITECTURE.md](BICEP_ARCHITECTURE.md)** | Architecture des templates Bicep | ✅ Existant |
+| **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** | Guide Makefile avec env-local-create | ✅ Mis à jour |
 
-### 🎯 Architecture Complète
-
-| Document | Description | Statut |
-|----------|-------------|---------|
-| **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** | 🆕 **Architecture end-to-end complète** | ✅ Nouveau |
-| **[complete-architecture-diagram.drawio](complete-architecture-diagram.drawio)** | 🆕 **Diagramme client-to-infrastructure** | ✅ Nouveau |
-| **[azure-infrastructure-diagram.drawio](azure-infrastructure-diagram.drawio)** | 🆕 **Diagramme infrastructure Azure** | ✅ Nouveau |
-
-### � Configuration et Migration
+### 🎯 Architecture Complète et Business
 
 | Document | Description | Statut |
 |----------|-------------|---------|
-| **[MIGRATION_COMPLETED.md](MIGRATION_COMPLETED.md)** | Migration PowerShell → Bash complète | ✅ À jour |
-| **[TODO.md](../TODO.md)** | État actuel et tâches restantes | ✅ À jour |
-| **[CHANGELOG.md](CHANGELOG.md)** | Historique des modifications | ✅ À jour |
-| **[STATUS.md](STATUS.md)** | Statut détaillé du projet | ✅ À jour |
+| **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** | Architecture hybride end-to-end avec DEV-06 | ✅ Mis à jour |
+| **[README_QUOTA.md](README_QUOTA.md)** | Système de quota et Marketplace | ✅ Existant |
+| **[SYSTEM_PROMPT.md](SYSTEM_PROMPT.md)** | Configuration IA et prompts | ✅ Existant |
 
-### 📋 Fonctionnalités et Business Logic
+### 🔧 Configuration et Migration
 
 | Document | Description | Statut |
 |----------|-------------|---------|
-| **[README_QUOTA.md](README_QUOTA.md)** | Système de quota et Marketplace | ✅ À jour |
-| **[SYSTEM_PROMPT.md](SYSTEM_PROMPT.md)** | Configuration IA et prompts | ✅ À jour |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Guide de déploiement détaillé | ⚠️ À vérifier |
+| **[MIGRATION_COMPLETED.md](MIGRATION_COMPLETED.md)** | Migration PowerShell → Bash complète | ✅ Existant |
+| **[CHANGELOG.md](CHANGELOG.md)** | Historique des modifications | ✅ Existant |
+| **[INSTALL_POSTGRESQL.md](INSTALL_POSTGRESQL.md)** | Guide PostgreSQL pour Windows | ✅ Existant |
 
 ---
 
 ## 🚀 Workflows Recommandés
 
-### 🆕 Premier Déploiement Complet
+### 🆕 Déploiement DEV-06 (Recommandé)
 ```bash
-# 1. Validation des prérequis
-wsl make validate
+# Déploiement complet hybride en une commande
+make deploy-dev06-full
 
-# 2. Déploiement infrastructure Azure
-wsl make deploy
-
-# 3. Configuration post-déploiement
-wsl make configure
-
-# 4. Vérification finale
-wsl make status
+# Ou étape par étape
+make deploy-dev06        # Infrastructure Bicep
+make deploy-app-dev06    # Application
+make status             # Vérification
 ```
 
 ### 👨‍💻 Développement Local
 ```bash
-# Configuration rapide développement
-wsl make dev-setup
+# Configuration automatique avec tenant ID
+make env-local-create
 
 # Tests et validation
-wsl make test-config
-wsl make test-db
+make test-config
+make test-db
 
-# Monitoring du statut
-wsl make status
+# Démarrage développement
+make dev-start
 ```
 
 ### 🔧 Maintenance et Monitoring
 ```bash
 # Voir toutes les commandes disponibles
-wsl make help
+make help
 
-# Validation complète (15 tests)
-wsl make validate
+# Statut complet du système
+make status
 
-# Nettoyage environnement
-wsl make clean
+# Validation des déploiements Azure
+make status-deployment
 ```
 
 ---
 
-## 🎯 État Actuel du Projet (v1.6.0-step5-wsl-validation)
+## 🎯 État Actuel du Projet (v1.8.0-step7-dev06-consistency)
 
-### ✅ Infrastructure Azure (Complète)
-- **PostgreSQL Flexible Server** : Déployé et accessible ✅
-- **Azure Key Vault** : Configuré avec secrets ✅
-- **API Management** : Policies de quota configurées ✅
-- **Monitoring** : Application Insights déployé ✅
-- **Validation** : 15/15 tests passent ✅
+### ✅ Infrastructure DEV-06 (Prête)
+- **Architecture Hybride** : Templates Bicep validés ✅
+- **Mutualisation OpenAI** : Optimisation coûts ✅  
+- **Sécurité** : Managed Identity + mots de passe dynamiques ✅
+- **Tooling** : Makefile optimisé avec env-local-create ✅
+- **Documentation** : Guides complets mis à jour ✅
 
-### ⚠️ Application Deployment (En cours)
-- **Azure OpenAI** : Configuration en cours
-- **Teams Bot** : Registration et déploiement requis
-- **Marketplace** : Tokens et configuration requis
-- **Tests E2E** : Validation complète à effectuer
+### 🚀 Prêt pour Déploiement
+- **Bicep Templates** : complete-infrastructure-dev06.bicep validé ✅
+- **Paramètres** : complete-infrastructure-dev06.parameters.json ✅
+- **Scripts** : Commandes de déploiement disponibles ✅
+- **Validation** : Audit sécurité terminé ✅
 
 ### 🚀 Prochaines Étapes (v1.7.0)
 1. Configuration Azure OpenAI Service

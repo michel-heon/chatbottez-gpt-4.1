@@ -1,32 +1,40 @@
-# 📋 Statut Projet ChatBottez GPT-4.1 - Version v1.7.0-step6-dev06-redeploy
+# 📋 Statut Projet ChatBottez GPT-4.1 - Version v1.8.0-step7-dev06-consistency
 
 ## 🎯 Vue d'ensemble Générale
 
-**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet est en phase de **redéploiement propre vers DEV-06** avec mutualisation des ressources partagées.
+**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet est en phase de **déploiement DEV-06** avec architecture hybride et mutualisation optimisée des ressources.
 
-**Status actuel** : 🔄 Redéploiement DEV-06 en cours - Templates prêts pour déploiement
+**Status actuel** : � Prêt pour déploiement DEV-06 - Infrastructure validée, sécurité renforcée, configuration automatisée
 
 ---
 
 ## 📊 État des Composants Principaux
 
-### ✅ Infrastructure Azure (Infrastructure Cible - DEV-06)
+### ✅ Infrastructure Azure (Architecture DEV-06 Hybride)
 
 | Composant | Status | Détails |
 |-----------|--------|---------|
-| **PostgreSQL Flexible Server** | 🔄 À déployer | • Version PostgreSQL 16<br>• SKU Standard_B1ms<br>• Base `marketplace_quota` à créer<br>• Resource Group: rg-chatbottez-gpt-4-1-dev-06 |
-| **Azure Key Vault** | 🔄 À déployer | • Nouveau Key Vault local<br>• Secrets OpenAI référencés<br>• Permissions configurées<br>• Accès application à valider |
-| **Resource Group** | 🔄 Target DEV-06 | • `rg-chatbottez-gpt-4-1-dev-06`<br>• Canada Central<br>• Tags appliqués<br>• Mutualisation avec rg-cotechnoe-ai-01 |
-| **Azure App Service** | ✅ Déployé | • Nom: `chatbottez-gpt41-app-rnukfj`<br>• Plan Windows Basic B1<br>• SSL/HTTPS activé |
-| **Application Insights** | ✅ Déployé | • Nom: `chatbottez-gpt41-ai-rnukfj`<br>• Monitoring configuré<br>• Télémétrie intégrée |
+| **Resource Group DEV-06** | 🟢 Configuré | • `rg-chatbottez-gpt-4-1-dev-06`<br>• Canada Central<br>• Tags: v1.8.0-step7-dev06-consistency<br>• Ready for deployment |
+| **PostgreSQL Flexible Server** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-pg-{unique}`<br>• Admin: `chatbottez_admin`<br>• Database: `marketplace_quota`<br>• User: `marketplace_user`<br>• Passwords: Sécurisés avec génération dynamique |
+| **Azure Key Vault Local** | 🔄 Prêt à déployer | • Nom: `kv-gpt41-{unique}`<br>• Secrets: database-url, app-insights<br>• Permissions: Managed Identity<br>• SKU: Standard |
+| **Azure App Service** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-app-{unique}`<br>• Plan: S1 Standard<br>• Runtime: Node.js<br>• Identity: User-Assigned MI<br>• URL: Auto-configurée |
+| **Application Insights** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-ai-{unique}`<br>• Log Analytics intégré<br>• Monitoring complet<br>• Connection string auto |
+| **API Management** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-apim-{unique}`<br>• SKU: Developer<br>• API: /api/v1/messages<br>• Policies: Quota 300/mois + logging |
 
-### ⚠️ Infrastructure Manquante à Déployer (Étapes Futures)
+### 🔗 Ressources Partagées (Mutualisées rg-cotechnoe-ai-01)
 
-| Composant | Status | Prochaines Actions |
-|-----------|--------|-------------------|
-| **API Management** | ⚠️ Prochaine phase | • Créer APIM service<br>• Configurer policies quota 300/mois<br>• Rate limiting et analytics |
-| **Microsoft Marketplace** | ⚠️ Phase 2 | • Partner Center setup<br>• SaaS offer configuration<br>• Billing integration |
-| **Teams Bot Registration** | ⚠️ Après app config | • Bot Framework registration<br>• Teams app package<br>• Distribution Teams Store |
+| Composant | Status | Détails |
+|-----------|--------|---------|
+| **OpenAI Service Partagé** | ✅ Disponible | • Nom: `openai-cotechnoe`<br>• Endpoint: https://openai-cotechnoe.openai.azure.com/<br>• Deployment: `gpt-4o`<br>• **Coût mutualisé** |
+| **Key Vault Partagé** | ✅ Disponible | • Nom: `kv-cotechno771554451004`<br>• Secret: `azure-openai-api-key`<br>• Accès: Managed Identity reference |
+
+### 🛠️ Nouveaux Outils et Automatisation
+
+| Outil | Status | Fonctionnalités |
+|-------|--------|----------------|
+| **Makefile Optimisé** | ✅ Implémenté | • `make env-local-create`: Génération auto config<br>• `make deploy-dev06-full`: Déploiement complet<br>• `make status`: État système<br>• Nettoyage des règles obsolètes |
+| **Configuration Automatique** | ✅ Implémenté | • Génération JWT automatique<br>• Tenant ID auto-détecté<br>• Templates .env.local sécurisés<br>• Protection anti-écrasement |
+| **Sécurité Renforcée** | ✅ Corrigé | • Mots de passe dynamiques dans Bicep<br>• Audit complet effectué<br>• Aucune fuite de secrets<br>• .gitignore robuste |
 
 ### ⚠️ Application Deployment (95% Complété - Configuration Finale)
 
@@ -154,12 +162,52 @@ wsl make test-db
 
 ---
 
-## 🔍 Prochaines Actions Critiques
+## � Prochaines Actions - Déploiement DEV-06
 
-### 🎯 Priorité 1 - Application Deployment
-1. **Azure OpenAI Service** 
-   - Créer resource Azure OpenAI
-   - Configurer modèle GPT-4 ou GPT-4-turbo
+### 🎯 Phase 1 - Déploiement Infrastructure (Immédiat)
+```bash
+# 1. Déploiement complet DEV-06
+make deploy-dev06-full
+
+# 2. Validation post-déploiement  
+make status
+
+# 3. Configuration des variables manquantes
+# Compléter dans Azure Portal : BOT_ID, TEAMS_APP_ID, etc.
+```
+
+### 🔧 Phase 2 - Configuration Application (Suite)
+1. **Bot Framework Registration**
+   - Créer Bot dans Azure Portal
+   - Configurer Teams Channel
+   - Récupérer BOT_ID et BOT_PASSWORD
+
+2. **Teams App Package**
+   - Mettre à jour manifest.json avec BOT_ID
+   - Générer package Teams (.zip)
+   - Upload vers Teams Dev Portal
+
+3. **Tests de Fonctionnalité**
+   - Test conversation bot
+   - Test quota management
+   - Test intégration APIM
+
+### 💼 Phase 3 - Marketplace Integration (Future)
+1. **Microsoft Partner Center**
+   - Créer SaaS offer
+   - Configurer webhooks fulfillment
+   - Tests sandbox
+
+---
+
+## 🏷️ Versions et Tags Git
+
+### ✅ **v1.8.0-step7-dev06-consistency** (Actuel)
+- ✅ Documentation cohérente avec DEV-06
+- ✅ Makefile optimisé (`env-local-create`, `deploy-dev06-full`)
+- ✅ Sécurité renforcée (mots de passe dynamiques)
+- ✅ Architecture hybride documentée
+- ✅ Templates Bicep validés
    - Obtenir API keys et endpoints
    - Tester connectivity depuis application
 

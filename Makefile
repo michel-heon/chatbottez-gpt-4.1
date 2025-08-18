@@ -3,7 +3,7 @@
 # Orchestration des scripts de déploiement et configuration
 # =================================================================
 
-.PHONY: help setup deploy configure validate clean test-config test-db status status-deployment deploy-dev06 deploy-app-dev06 deploy-dev06-full check-deps all
+.PHONY: help setup deploy configure validate clean test-config test-db status status-deployment deploy-dev06 deploy-app-dev06 deploy-dev06-full check-deps all env-local-create
 
 # Configuration
 SCRIPTS_DIR := scripts
@@ -40,6 +40,7 @@ help:
 	@echo ""
 	@echo "$(YELLOW)🔧 COMMANDES DE DÉVELOPPEMENT:$(NC)"
 	@echo ""
+	@echo "  $(GREEN)make env-local-create$(NC) - 🔑 Créer le fichier .env.local automatiquement"
 	@echo "  $(GREEN)make test-config$(NC)  - 🧪 Tester la configuration"
 	@echo "  $(GREEN)make test-db$(NC)      - 💾 Tester la connexion base de données"
 	@echo "  $(GREEN)make status$(NC)       - 📊 Afficher le statut du système"
@@ -53,6 +54,7 @@ help:
 	@echo "  - WSL/Bash disponible"
 	@echo ""
 	@echo "$(YELLOW)💡 DÉPLOIEMENT RECOMMANDÉ:$(NC)"
+	@echo "  0. $(GREEN)make env-local-create$(NC) pour créer la configuration locale"
 	@echo "  1. $(GREEN)make deploy-dev06-full$(NC) pour un déploiement complet"
 	@echo "  2. Configuration manuelle des variables d'environnement via Azure Portal"
 	@echo "  3. $(GREEN)make status$(NC) pour vérifier l'état"
@@ -82,6 +84,133 @@ setup: environment database marketplace
 	@echo ""
 	@echo "$(GREEN)✅ Configuration initiale terminée!$(NC)"
 	@echo "$(YELLOW)Prochaine étape: $(GREEN)make deploy$(NC)"
+
+## env-local-create: 🔑 Créer le fichier .env.local avec valeurs générées automatiquement
+env-local-create:
+	@echo "$(CYAN)Création du fichier env/.env.local...$(NC)"
+	@if [ -f "env/.env.local" ]; then \
+		echo "$(YELLOW)⚠️  Le fichier env/.env.local existe déjà!$(NC)"; \
+		echo "$(YELLOW)Voulez-vous le remplacer? (y/N):$(NC)"; \
+		read -r response; \
+		if [ "$$response" != "y" ] && [ "$$response" != "Y" ]; then \
+			echo "$(RED)❌ Opération annulée$(NC)"; \
+			exit 1; \
+		fi; \
+		cp env/.env.local env/.env.local.backup; \
+		echo "$(GREEN)✅ Sauvegarde créée: env/.env.local.backup$(NC)"; \
+	fi
+	@echo "$(CYAN)🔑 Génération de la clé JWT sécurisée...$(NC)"
+	@JWT_KEY=$$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"); \
+	TENANT_ID=$$(az account show --query "tenantId" -o tsv 2>/dev/null || echo "to-be-configured"); \
+	echo "$(CYAN)📝 Création du fichier de configuration...$(NC)"; \
+	printf '%s\n' \
+		'# =================================================================' \
+		'# Microsoft Teams AI Chatbot - Configuration Locale' \
+		'# =================================================================' \
+		'# ⚠️ IMPORTANT: Ce fichier contient des secrets - Ne jamais commiter !' \
+		"# Généré automatiquement le $$(date '+%Y-%m-%d %H:%M:%S')" \
+		'' \
+		'# =================================================================' \
+		'# Microsoft Teams Framework - Built-in Variables' \
+		'# =================================================================' \
+		'TEAMSFX_ENV=local' \
+		'APP_NAME_SUFFIX=local' \
+		'' \
+		'# Azure Tenant Configuration' \
+		"TENANT_ID=$$TENANT_ID" \
+		'' \
+		'# Teams App Configuration (À compléter après déploiement)' \
+		'BOT_ID=to-be-filled-after-deployment' \
+		'TEAMS_APP_ID=to-be-filled-after-deployment' \
+		'BOT_DOMAIN=to-be-filled-with-ngrok-or-azure-domain' \
+		'BOT_ENDPOINT=https://to-be-filled-with-ngrok-or-azure-domain' \
+		'' \
+		'# =================================================================' \
+		'# Security - JWT Secret Key (Généré automatiquement)' \
+		'# =================================================================' \
+		"JWT_SECRET_KEY=$$JWT_KEY" \
+		'' \
+		'# =================================================================' \
+		'# Database Configuration (Local Development)' \
+		'# =================================================================' \
+		'DB_TYPE=postgresql' \
+		'DB_HOST=localhost' \
+		'DB_PORT=5432' \
+		'DB_NAME=marketplace_quota' \
+		'DB_USER=marketplace_user' \
+		'DB_PASSWORD=local-dev-password-123' \
+		'' \
+		'# Database connection string for application' \
+		'DATABASE_URL=postgresql://marketplace_user:local-dev-password-123@localhost:5432/marketplace_quota' \
+		'' \
+		'# =================================================================' \
+		'# Azure Database Configuration (Production - DEV-06)' \
+		'# =================================================================' \
+		'AZURE_DATABASE_SERVER=to-be-filled-after-deployment' \
+		'AZURE_DATABASE_NAME=marketplace_quota' \
+		'AZURE_KEY_VAULT_NAME=to-be-filled-after-deployment' \
+		'AZURE_RESOURCE_GROUP=rg-chatbottez-gpt-4-1-dev-06' \
+		'AZURE_LOCATION=Canada Central' \
+		'' \
+		'# =================================================================' \
+		'# Azure OpenAI Configuration (À configurer)' \
+		'# =================================================================' \
+		'AZURE_OPENAI_API_KEY=to-be-filled-from-keyvault-or-shared-service' \
+		'AZURE_OPENAI_ENDPOINT=https://to-be-filled.openai.azure.com/' \
+		'AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4' \
+		'AZURE_OPENAI_API_VERSION=2024-02-15-preview' \
+		'' \
+		'# =================================================================' \
+		'# Microsoft Marketplace Configuration' \
+		'# =================================================================' \
+		'MARKETPLACE_API_BASE=https://marketplaceapi.microsoft.com' \
+		'MARKETPLACE_API_KEY=to-be-filled-with-marketplace-key' \
+		'MARKETPLACE_SUBSCRIPTION_API_VERSION=2018-08-31' \
+		'MARKETPLACE_METERING_API_VERSION=2018-08-31' \
+		'' \
+		'# Quota Settings' \
+		'DIMENSION_NAME=question' \
+		'INCLUDED_QUOTA_PER_MONTH=300' \
+		'OVERAGE_ENABLED=false' \
+		'OVERAGE_PRICE_PER_QUESTION=0.01' \
+		'' \
+		'# =================================================================' \
+		'# Monitoring & Logging' \
+		'# =================================================================' \
+		'LOG_LEVEL=info' \
+		'AUDIT_LOG_ENABLED=true' \
+		'APPLICATION_INSIGHTS_CONNECTION_STRING=to-be-filled-after-deployment' \
+		'' \
+		'# =================================================================' \
+		'# Environment & Development' \
+		'# =================================================================' \
+		'NODE_ENV=development' \
+		'PORT=3978' \
+		'' \
+		'# =================================================================' \
+		'# Microsoft Bot Framework' \
+		'# =================================================================' \
+		'MicrosoftAppType=MultiTenant' \
+		'MicrosoftAppId=to-be-filled-after-deployment' \
+		'MicrosoftAppPassword=to-be-filled-after-deployment' \
+		'BOT_PASSWORD=to-be-filled-after-deployment' \
+		'' \
+		'# =================================================================' \
+		'# NOTES DE CONFIGURATION:' \
+		'# =================================================================' \
+		'# 1. Ce fichier est créé automatiquement avec des valeurs par défaut' \
+		'# 2. Les valeurs "to-be-filled-*" doivent être complétées après le déploiement' \
+		'# 3. Les secrets doivent être récupérés depuis Azure Key Vault en production' \
+		'# 4. JWT_SECRET_KEY et TENANT_ID sont déjà configurés automatiquement' \
+		'# 5. Utilisez '"'"'make deploy-dev06-full'"'"' pour déployer l'"'"'infrastructure' \
+		> env/.env.local
+	@echo "$(GREEN)✅ Fichier env/.env.local créé avec succès!$(NC)"
+	@echo "$(YELLOW)🔑 JWT Secret Key générée automatiquement$(NC)"
+	@echo "$(YELLOW)🏢 Tenant ID configuré automatiquement$(NC)"
+	@echo "$(CYAN)📝 Prochaines étapes:$(NC)"
+	@echo "  1. $(GREEN)make deploy-dev06-full$(NC) pour déployer l'infrastructure"
+	@echo "  2. Compléter les valeurs manquantes après le déploiement"
+	@echo "  3. $(GREEN)make status$(NC) pour vérifier la configuration"
 
 ## environment: 🌍 Configuration de l'environnement de développement
 environment:

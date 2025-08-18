@@ -1,31 +1,35 @@
 # ChatBottez GPT-4.1 - Teams AI Chatbot with Marketplace Quota Management
 
-> **🚀 DEPLOYED VERSION v1.7.0**  
-> **Application Status**: ✅ Deployed to Azure - ⚠️ Configuration pending  
-> **Live URL**: https://chatbottez-gpt41-app-rnukfj.azurewebsites.net  
-> **Infrastructure**: Azure Canada Central (dev-05)
+> **🚀 READY FOR DEPLOYMENT v1.8.0**  
+> **Architecture**: Hybrid DEV-06 with shared OpenAI resources  
+> **Status**: ✅ Infrastructure ready - 🚀 Ready to deploy  
+> **Resource Group**: rg-chatbottez-gpt-4-1-dev-06  
+> **Shared Resources**: rg-cotechnoe-ai-01 (OpenAI + Key Vault)
 
 This app template is built on top of [Teams AI library](https://aka.ms/teams-ai-library).
 It showcases an agent app that responds to user questions like ChatGPT with **Microsoft Commercial Marketplace integration** and **quota management**. This enables your users to talk with the AI agent in Teams while respecting subscription limits.
 
-## � **Current Status v1.7.0**
+## 🎯 **Current Status v1.8.0-step7-dev06-consistency**
 
-### ✅ **Deployed Infrastructure**
-- **Azure Environment**: DEV-05 (Canada Central)
-- **Resource Group**: `rg-chatbottez-gpt-4-1-dev-05`
-- **Web Application**: https://chatbottez-gpt41-app-rnukfj.azurewebsites.net
-- **Database**: PostgreSQL Flexible Server (operational)
-- **Key Vault**: OpenAI keys securely stored
-- **Monitoring**: Application Insights configured
+### ✅ **Infrastructure Ready (DEV-06)**
+- **Architecture**: Hybrid deployment with resource mutualization
+- **Target Resource Group**: `rg-chatbottez-gpt-4-1-dev-06`
+- **Shared OpenAI**: `rg-cotechnoe-ai-01` (cost-optimized)
+- **Bicep Templates**: Complete infrastructure validated
+- **Security**: Dynamic passwords, managed identity ready
+- **Tooling**: Optimized Makefile with env-local-create command
 
-### ⚠️ **Known Issues**
-- **Environment Variables**: Configuration pending via Azure Portal
-- **Application Status**: HTTP 500 (config required)
+### 🚀 **Ready for Deployment**
+```bash
+# One-command deployment
+make deploy-dev06-full
+```
 
 ### 🎯 **Next Steps**
-1. Configure environment variables via Azure Portal
-2. Test application functionality
-3. Complete Teams Bot registration
+1. Run deployment: `make deploy-dev06-full`
+2. Configure Bot Framework variables via Azure Portal
+3. Test application functionality
+4. Complete Teams integration
 
 ## �🆕 Marketplace Quota Features
 
@@ -59,107 +63,137 @@ For detailed information about quota management, see [README_QUOTA.md](./docs/RE
 
 ## 🚀 **Deployment Options**
 
-### 🎯 **Option 1: Use Deployed Application (Recommended)**
-The application is already deployed and ready! You just need to configure environment variables:
+### 🎯 **Option 1: Deploy DEV-06 Infrastructure (Recommended)**
+Ready-to-deploy hybrid architecture with cost optimization:
+
+```bash
+# Complete deployment (infrastructure + application)
+make deploy-dev06-full
+
+# Or step by step:
+make deploy-dev06        # Deploy Bicep infrastructure
+make deploy-app-dev06    # Deploy application code
+```
+
+**Architecture DEV-06:**
+- ✅ **New Resources**: PostgreSQL, App Service S1, APIM Developer, Key Vault Local
+- ✅ **Shared Resources**: OpenAI Service, Key Vault Shared (cost-optimized)
+- ✅ **Security**: Managed Identity, dynamic passwords, secure secrets
+
+### 🛠️ **Option 2: Local Development**
+For development and testing:
+
+```bash
+# Create local environment configuration
+make env-local-create
+
+# Start local development
+make dev-start
+```
+
+### � **Option 3: Previous Infrastructure (DEV-05)**
+If you prefer the previous deployment:
 
 1. **Access Azure Portal**: Go to `chatbottez-gpt41-app-rnukfj` App Service
 2. **Configure Variables**: Set environment variables via Azure Portal
 3. **Test Application**: Verify functionality at https://chatbottez-gpt41-app-rnukfj.azurewebsites.net
 
-### 🛠️ **Option 2: Local Development**
-For development and testing:
+## 📋 Manual Setup (Alternative)
 
-1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
-1. In file *env/.env.playground.user*, fill in your Azure OpenAI key `SECRET_AZURE_OPENAI_API_KEY=<your-key>`, endpoint `AZURE_OPENAI_ENDPOINT=<your-endpoint>`, and deployment name `AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment>`.
+If you prefer manual configuration:
 
-### 🔧 **Option 3: Deploy New Infrastructure**
-If you want to deploy your own infrastructure, use the WSL deployment script:
-
+### **Local Development Setup**
 ```bash
-# Deploy complete infrastructure and application
-./scripts/deploy-app-dev05-wsl.sh
+# 1. Create local environment (automatic tenant ID detection)
+make env-local-create
 
-# Or use Makefile commands (alternative)
-make help
+# 2. Configure Azure OpenAI in .env.local
+SECRET_AZURE_OPENAI_API_KEY=your-key
+AZURE_OPENAI_ENDPOINT=your-endpoint
+AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment
 
-# Déploiement complet (setup + deploy + configure + validate)
-make all
+# 3. Test configuration
+make test-config
 
-# Ou étape par étape :
-make setup      # Configuration initiale (environnement + base de données + marketplace)
-make deploy     # Déploiement infrastructure Azure
-make configure  # Configuration post-déploiement
-make validate   # Validation complète du système
-
-# Commandes de développement
-make dev-setup  # Configuration rapide pour développement
-make test-config # Tester la configuration
-make status     # Afficher le statut du système
+# 4. Start local development
+make dev-start
 ```
 
-## 📋 Configuration Manuelle (Alternative)
-
-Si vous préférez configurer manuellement :
-
-1. **Environment Setup**: Run the environment configuration script:
-   ```bash
-   # Bash/WSL (Recommandé)
-   ./scripts/environment-setup.sh
-   ```
-   This will create `.env.local` with your Azure tenant ID and generate a JWT secret.
-1. **Database Setup**:
-   - Install PostgreSQL (see [docs/INSTALL_POSTGRESQL.md](./docs/INSTALL_POSTGRESQL.md) for Windows guide)
-   - Run the database setup script:
-     ```bash
-     # Bash/WSL (Recommandé)
-     ./scripts/database-setup.sh
-     
-     ```
-   - Test the database connection: `npm run test:db`
-1. Configure remaining variables in `.env.local` (marketplace credentials, Azure services, etc.)
-1. Press F5 to start debugging which launches your app in Microsoft 365 Agents Playground using a web browser. Select `Debug in Microsoft 365 Agents Playground`.
-1. You can send any message to get a response from the agent.
-
-## 🏭 Déploiement Production
-
-### Avec Makefile (Recommandé)
-
+### **Database Setup (if running locally)**
 ```bash
-# Déploiement production complet avec validation
+# Install PostgreSQL (see docs/INSTALL_POSTGRESQL.md for Windows)
+make db-setup
+
+# Test database connection
+make test-db
+```
+
+## 🏭 Production Deployment
+
+### **Option 1: DEV-06 Deployment (Recommended)**
+```bash
+# Complete production deployment with hybrid architecture
+make deploy-dev06-full
+
+# Includes:
+# - Infrastructure deployment (Bicep)
+# - Application deployment
+# - Configuration validation
+# - Security setup
+```
+
+### **Option 2: Makefile-based Deployment**
+```bash
+# Legacy deployment process
 make prod-deploy
 
-# Ou pour plus de contrôle :
-make setup       # Configuration initiale
-make deploy      # Déploiement Azure infrastructure
-make configure   # Configuration APIM et services
-make validate    # Tests complets (15 validations)
+# Or step by step:
+make setup       # Initial configuration
+make deploy      # Azure infrastructure deployment
+make configure   # APIM and services configuration
+make validate    # Complete testing (15 validations)
 ```
 
-### Configuration Manuelle Production
+### **Manual Production Configuration**
 
-For production deployment with marketplace integration:
+For marketplace integration, configure these variables in your production environment:
 
-1. **Configure Marketplace Variables**: Copy `.env.example` to your production environment and fill in:
-   ```bash
-   MARKETPLACE_API_BASE=https://marketplaceapi.microsoft.com
-   MARKETPLACE_API_KEY=your-marketplace-api-key
-   DIMENSION_NAME=question
-   INCLUDED_QUOTA_PER_MONTH=300
-   ```
+```bash
+# Marketplace Configuration
+MARKETPLACE_API_BASE=https://marketplaceapi.microsoft.com
+MARKETPLACE_API_KEY=your-marketplace-api-key
+DIMENSION_NAME=question
+INCLUDED_QUOTA_PER_MONTH=300
 
-2. **Deploy APIM Infrastructure**: Use the provided deployment scripts:
-   ```bash
-   # Déploiement automatisé
-   ./scripts/azure-deploy.sh --show-config --create-resource-group
-     --parameters publisherEmail=your@email.com publisherName="Your Company"
-   ```
+# Bot Framework (configure via Azure Portal after deployment)
+BOT_ID=<from-bot-registration>
+TEAMS_APP_ID=<from-teams-app>
+BOT_PASSWORD=<from-bot-registration>
+MicrosoftAppId=<from-bot-registration>
+MicrosoftAppPassword=<from-bot-registration>
+```
 
-3. **Setup Database**: Run the database schema:
-   ```bash
-   psql -d your_database -f src/db/schema.sql
-   ```
+## 🎯 **Quick Start Guide**
 
-4. **Deploy Application**: Follow standard Microsoft 365 Agents Toolkit deployment process.
+### **1. Deploy Infrastructure**
+```bash
+# One command to deploy everything
+make deploy-dev06-full
+```
+
+### **2. Configure Teams Integration**
+After deployment, configure Bot Framework variables in Azure Portal:
+- Go to your App Service in `rg-chatbottez-gpt-4-1-dev-06`
+- Add Bot registration variables (BOT_ID, BOT_PASSWORD, etc.)
+
+### **3. Test Application**
+```bash
+# Check deployment status
+make status
+
+# Test application health
+curl https://chatbottez-gpt41-app-{unique}.azurewebsites.net/api/health
+```
 
 **Congratulations**! You are running an application that can now interact with users in Microsoft 365 Agents Playground with quota management:
 
@@ -252,21 +286,29 @@ When quota is exceeded (HTTP 429):
 }
 ```
 
-The following are Microsoft 365 Agents Toolkit specific project files. You can [visit a complete guide on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview) to understand how Microsoft 365 Agents Toolkit works.
+## 📚 **Documentation**
 
-| File                                 | Contents                                           |
+For complete documentation and guides:
+
+- **[Deployment Guide DEV-06](./docs/DEV06_DEPLOYMENT_GUIDE.md)** - Complete deployment guide for hybrid architecture
+- **[Architecture Overview](./docs/COMPLETE_ARCHITECTURE.md)** - Technical architecture and design decisions
+- **[Project Status](./docs/STATUS.md)** - Current status and progress tracking
+- **[Quota Management](./docs/README_QUOTA.md)** - Marketplace integration and quota features
+- **[Makefile Guide](./docs/MAKEFILE_GUIDE.md)** - Available commands and workflows
+
+## 🎯 **Microsoft 365 Agents Toolkit Files**
+
+The following are Microsoft 365 Agents Toolkit specific project files:
+
+| File | Contents |
 | - | - |
-|`m365agents.yml`|This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things:  Properties and configuration Stage definitions. |
-|`m365agents.local.yml`|This overrides `m365agents.yml` with actions that enable local execution and debugging.|
-|`m365agents.playground.yml`| This overrides `m365agents.yml` with actions that enable local execution and debugging in Microsoft 365 Agents Playground.|
+|`m365agents.yml`|Main project file with properties and stage definitions |
+|`m365agents.local.yml`|Overrides for local execution and debugging |
+|`m365agents.playground.yml`|Overrides for Microsoft 365 Agents Playground debugging |
 
-| File                                 | Contents                                           |
-| - | - |
-|`m365agents.yml`|This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things:  Properties and configuration Stage definitions. |
-|`m365agents.local.yml`|This overrides `m365agents.yml` with actions that enable local execution and debugging.|
-|`m365agents.playground.yml`| This overrides `m365agents.yml` with actions that enable local execution and debugging in Microsoft 365 Agents Playground.|
+For a complete guide, visit [Microsoft 365 Agents Toolkit on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview).
 
-## Extend the template
+## 🛠️ **Extend the Template**
 
 You can follow [Build a Basic AI Chatbot in Teams](https://aka.ms/teamsfx-basic-ai-chatbot) to extend the Basic AI Chatbot template with more AI capabilities, like:
 - [Customize prompt](https://aka.ms/teamsfx-basic-ai-chatbot#customize-prompt)
