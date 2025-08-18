@@ -27,6 +27,8 @@ lib/
 
 # Security - Environment files with secrets
 config/azure.env.local
+env/.env.local.old
+env/.env.local.backup*
 *.key
 *.pem
 *.p12
