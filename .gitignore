@@ -24,3 +24,23 @@ lib/
 
 # Dev tool directories
 /devTools/
+
+# Security - Environment files with secrets
+config/azure.env.local
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Azure deployment outputs
+deployment-outputs.json
+deployment_output_*.json
+temp_*.ps1
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Logs
+logs/
+*.log

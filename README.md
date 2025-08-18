@@ -1,9 +1,33 @@
-# Overview of the Basic AI Chatbot template with Marketplace Quotas
+# ChatBottez GPT-4.1 - Teams AI Chatbot with Marketplace Quota Management
+
+> **🚀 DEPLOYED VERSION v1.7.0**  
+> **Application Status**: ✅ Deployed to Azure - ⚠️ Configuration pending  
+> **Live URL**: https://chatbottez-gpt41-app-rnukfj.azurewebsites.net  
+> **Infrastructure**: Azure Canada Central (dev-05)
 
 This app template is built on top of [Teams AI library](https://aka.ms/teams-ai-library).
 It showcases an agent app that responds to user questions like ChatGPT with **Microsoft Commercial Marketplace integration** and **quota management**. This enables your users to talk with the AI agent in Teams while respecting subscription limits.
 
-## 🆕 Marketplace Quota Features
+## � **Current Status v1.7.0**
+
+### ✅ **Deployed Infrastructure**
+- **Azure Environment**: DEV-05 (Canada Central)
+- **Resource Group**: `rg-chatbottez-gpt-4-1-dev-05`
+- **Web Application**: https://chatbottez-gpt41-app-rnukfj.azurewebsites.net
+- **Database**: PostgreSQL Flexible Server (operational)
+- **Key Vault**: OpenAI keys securely stored
+- **Monitoring**: Application Insights configured
+
+### ⚠️ **Known Issues**
+- **Environment Variables**: Configuration pending via Azure Portal
+- **Application Status**: HTTP 500 (config required)
+
+### 🎯 **Next Steps**
+1. Configure environment variables via Azure Portal
+2. Test application functionality
+3. Complete Teams Bot registration
+
+## �🆕 Marketplace Quota Features
 
 This template now includes:
 - **300 questions per month per subscription** quota enforcement
@@ -33,12 +57,29 @@ For detailed information about quota management, see [README_QUOTA.md](./docs/RE
 1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
 1. In file *env/.env.playground.user*, fill in your Azure OpenAI key `SECRET_AZURE_OPENAI_API_KEY=<your-key>`, endpoint `AZURE_OPENAI_ENDPOINT=<your-endpoint>`, and deployment name `AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment>`.
 
-## 🚀 Déploiement avec Makefile (Recommandé)
+## 🚀 **Deployment Options**
 
-Le moyen le plus simple de déployer et configurer le système complet est d'utiliser le Makefile fourni :
+### 🎯 **Option 1: Use Deployed Application (Recommended)**
+The application is already deployed and ready! You just need to configure environment variables:
+
+1. **Access Azure Portal**: Go to `chatbottez-gpt41-app-rnukfj` App Service
+2. **Configure Variables**: Set environment variables via Azure Portal
+3. **Test Application**: Verify functionality at https://chatbottez-gpt41-app-rnukfj.azurewebsites.net
+
+### 🛠️ **Option 2: Local Development**
+For development and testing:
+
+1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
+1. In file *env/.env.playground.user*, fill in your Azure OpenAI key `SECRET_AZURE_OPENAI_API_KEY=<your-key>`, endpoint `AZURE_OPENAI_ENDPOINT=<your-endpoint>`, and deployment name `AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment>`.
+
+### 🔧 **Option 3: Deploy New Infrastructure**
+If you want to deploy your own infrastructure, use the WSL deployment script:
 
 ```bash
-# Afficher l'aide et les commandes disponibles
+# Deploy complete infrastructure and application
+./scripts/deploy-app-dev05-wsl.sh
+
+# Or use Makefile commands (alternative)
 make help
 
 # Déploiement complet (setup + deploy + configure + validate)
@@ -235,15 +276,24 @@ You can follow [Build a Basic AI Chatbot in Teams](https://aka.ms/teamsfx-basic-
 - [Customize model parameters](https://aka.ms/teamsfx-basic-ai-chatbot#customize-model-parameters)
 - [Handle messages with image](https://aka.ms/teamsfx-basic-ai-chatbot#handle-messages-with-image)
 
-## 📚 Documentation Complète
+## 📚 **Documentation Complète**
 
+### 🎯 **État Actuel (v1.7.0-step6-application-deployment)**
+- **Infrastructure**: 100% déployée ✅
+- **Application**: Déployée, configuration pendante ⚠️
+- **Environment**: DEV-05 Azure Canada Central ✅
+- **Next Phase**: Environment variables configuration
+
+### 📖 **Documentation Technique**
 Pour une documentation détaillée, consultez le dossier `docs/` :
 
 - **[docs/README.md](docs/README.md)** - 📚 Index de navigation de toute la documentation
+- **[docs/STATUS.md](docs/STATUS.md)** - 📊 Statut détaillé v1.7.0
+- **[docs/DEPLOYMENT_LOG.md](docs/DEPLOYMENT_LOG.md)** - 🚀 Log de déploiement 18 août 2025
+- **[docs/COMPLETE_ARCHITECTURE.md](docs/COMPLETE_ARCHITECTURE.md)** - 🏗️ Architecture complète end-to-end
 - **[docs/MAKEFILE_GUIDE.md](docs/MAKEFILE_GUIDE.md)** - 🛠️ Guide complet du Makefile avec exemples
 - **[docs/README_QUOTA.md](docs/README_QUOTA.md)** - 💼 Système de quota et Marketplace
-- **[docs/DEPLOYMENT_SUMMARY.md](docs/DEPLOYMENT_SUMMARY.md)** - 🏗️ Résumé du déploiement Azure
-- **[docs/azure-components.md](docs/azure-components.md)** - ☁️ Composants Azure déployés et à venir
+- **[COMMIT_SUMMARY.md](COMMIT_SUMMARY.md)** - 📋 Résumé des changements v1.7.0
 - **[TODO.md](TODO.md)** - ✅ État actuel et prochaines étapes
 
 ## Additional information and references

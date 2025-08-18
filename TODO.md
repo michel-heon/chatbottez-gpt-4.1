@@ -1,4 +1,160 @@
-# TODO - Microsoft Marketplace Quota Implementation
+# TODO - ChatBottez GPT-4.1 v1.7.0
+
+## 🎯 **État Actuel - 18 Août 2025**
+
+### ✅ **COMPLÉTÉ - Infrastructure & Application**
+- [x] **Infrastructure Azure complète** : Environment DEV-05 déployé
+- [x] **Application déployée** : Code compilé et uploadé sur Azure App Service
+- [x] **Key Vault configuré** : OpenAI API key stockée de manière sécurisée
+- [x] **Database opérationnelle** : PostgreSQL Flexible Server ready
+- [x] **Monitoring actif** : Application Insights configuré
+- [x] **Scripts de déploiement** : Script WSL `deploy-app-dev05-wsl.sh` fonctionnel
+- [x] **Documentation mise à jour** : Statut v1.7.0, logs de déploiement
+- [x] **Projet nettoyé** : Fichiers désuets supprimés, structure optimisée
+
+### ⚠️ **EN COURS - Configuration Finale**
+- [ ] **Fix Environment Variables** : Azure CLI config échoue, configuration manuelle requise
+- [ ] **Application Startup** : Résoudre HTTP 500 error
+- [ ] **Variables Mapping** : Synchroniser noms de secrets Key Vault avec Bicep
+
+### 🚀 **PROCHAINES ÉTAPES IMMÉDIATES**
+
+#### **Phase 1 - Application Functional (Priorité 1)**
+1. **[ ] Fix Environment Variables Configuration**
+   - Access Azure Portal → App Service `chatbottez-gpt41-app-rnukfj`
+   - Manually configure environment variables (Azure CLI bug)
+   - Test environment variables are properly loaded
+
+2. **[ ] Resolve Application Startup Issues**
+   - Diagnose HTTP 500 error causes
+   - Verify Node.js runtime compatibility
+   - Check application logs for specific error messages
+
+3. **[ ] Validate Application Functionality**
+   - Test health endpoints
+   - Verify OpenAI API integration
+   - Test basic chat functionality
+
+#### **Phase 2 - Teams Integration (Priorité 2)**
+4. **[ ] Teams Bot Registration**
+   - Register bot in Azure Bot Service
+   - Configure Teams app manifest
+   - Deploy Teams app package
+
+5. **[ ] End-to-End Testing**
+   - Test chat functionality in Teams
+   - Verify quota enforcement
+   - Test Marketplace webhook integration
+
+#### **Phase 3 - Production Readiness (Priorité 3)**
+6. **[ ] Marketplace Configuration**
+   - Setup Partner Center account
+   - Configure SaaS offer
+   - Implement billing webhooks
+
+7. **[ ] Performance & Security**
+   - Load testing
+   - Security review
+   - Documentation completion
+
+---
+
+## 🛠️ **Actions Techniques Détaillées**
+
+### 🔧 **Environment Variables Fix**
+
+**Problème** : Les commandes `az webapp config appsettings set` retournent success mais toutes les valeurs restent `null`.
+
+**Variables Requises** :
+```env
+NODE_ENV=production
+AZURE_OPENAI_ENDPOINT=https://openai-cotechnoe.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1
+AZURE_OPENAI_KEY=@Microsoft.KeyVault(VaultName=kv-gpt41-rnukfj;SecretName=azure-openai-key)
+DATABASE_URL=@Microsoft.KeyVault(VaultName=kv-gpt41-rnukfj;SecretName=database-url)
+APPLICATIONINSIGHTS_CONNECTION_STRING=[from bicep output]
+```
+
+**Solutions à Tester** :
+- [ ] Configuration manuelle via Azure Portal
+- [ ] Utilisation de Azure CLI PowerShell natif
+- [ ] Redéploiement infrastructure avec variables intégrées
+- [ ] Vérification des permissions Azure
+
+### 🚨 **Issues Connues**
+
+#### **Azure CLI Environment Variables Bug**
+- **Symptôme** : `az webapp config appsettings set` réussit mais variables = null
+- **Impact** : Application ne peut pas démarrer (HTTP 500)
+- **Workaround** : Configuration manuelle via Azure Portal
+
+#### **Key Vault Secret Mapping**
+- **Bicep attend** : `azure-openai-key`
+- **Nous avions** : `openai-api-key`
+- **Status** : ✅ Corrigé - les deux secrets existent maintenant
+
+#### **Windows vs Linux App Service**
+- **Current** : Windows App Service Plan (reserved: false)
+- **Deployed** : web.config pour IIS
+- **Status** : ✅ Compatible - reste à tester
+
+---
+
+## 📊 **Métriques de Progression**
+
+### **Infrastructure (100% ✅)**
+- Resource Group : ✅
+- PostgreSQL Database : ✅  
+- Key Vault : ✅
+- App Service Plan : ✅
+- Web App : ✅
+- Application Insights : ✅
+
+### **Application (85% ⚠️)**
+- Code Compilation : ✅
+- Deployment Package : ✅
+- Azure Upload : ✅
+- Environment Config : ❌ (blocking)
+- Application Runtime : ❌ (pending config)
+
+### **Teams Integration (0% ⏳)**
+- Bot Registration : ⏳
+- Teams Manifest : ⏳
+- App Package : ⏳
+- Teams Testing : ⏳
+
+### **Marketplace (0% ⏳)**
+- Partner Center : ⏳
+- SaaS Offer : ⏳
+- Billing Webhooks : ⏳
+- End-to-End Testing : ⏳
+
+---
+
+## 🎯 **Milestone Targets**
+
+### **v1.7.1 - Configuration Fix (Target: 19 août 2025)**
+- [ ] Environment variables configured
+- [ ] Application responding (HTTP 200)
+- [ ] Basic functionality verified
+
+### **v1.8.0 - Teams Integration (Target: 22 août 2025)**
+- [ ] Teams Bot registered and functional
+- [ ] Chat working in Teams client
+- [ ] Teams app package published
+
+### **v1.9.0 - Marketplace Ready (Target: 30 août 2025)**
+- [ ] Partner Center configured
+- [ ] SaaS offer published
+- [ ] Billing integration tested
+- [ ] Production deployment ready
+
+---
+
+**Last Updated** : 18 août 2025  
+**Current Version** : v1.7.0-step6-application-deployment  
+**Next Milestone** : v1.7.1-step6-config-fix  
+**Deployment URL** : https://chatbottez-gpt41-app-rnukfj.azurewebsites.net
 
 ## � Déploiement Rapide avec Makefile
 

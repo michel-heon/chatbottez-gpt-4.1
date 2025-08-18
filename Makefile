@@ -3,7 +3,7 @@
 # Orchestration des scripts de déploiement et configuration
 # =================================================================
 
-.PHONY: help setup deploy configure validate clean test-config test-db all
+.PHONY: help setup deploy configure validate deploy-bicep deploy-dev03 deploy-dev04 deploy-dev05 clean test-config test-db status-deployment all
 
 # Configuration
 SCRIPTS_DIR := scripts
@@ -31,6 +31,11 @@ help:
 	@echo ""
 	@echo "  $(GREEN)make setup$(NC)        - 🔧 Configuration initiale complète"
 	@echo "  $(GREEN)make deploy$(NC)       - 🚀 Déploiement Azure infrastructure"
+	@echo "  $(GREEN)make deploy-bicep$(NC) - 🏗️  Déploiement infrastructure complète (Bicep)"
+	@echo "  $(GREEN)make deploy-dev03$(NC) - 🆕 Déploiement nouveau groupe dev-03 (complet)"
+	@echo "  $(GREEN)make deploy-dev04$(NC) - 🆕 Déploiement nouveau groupe dev-04 (complet)"
+	@echo "  $(GREEN)make deploy-dev05$(NC) - 🆕 Déploiement nouveau groupe dev-05 (complet)"
+	@echo "  $(GREEN)make deploy-app-dev05$(NC) - 🚀 Déployer l'application vers dev-05"
 	@echo "  $(GREEN)make configure$(NC)    - ⚙️  Configuration post-déploiement"
 	@echo "  $(GREEN)make validate$(NC)     - ✅ Validation complète du système"
 	@echo "  $(GREEN)make all$(NC)          - 🎉 Processus complet (setup + deploy + configure + validate)"
@@ -39,6 +44,7 @@ help:
 	@echo ""
 	@echo "  $(GREEN)make test-config$(NC)  - 🧪 Tester la configuration"
 	@echo "  $(GREEN)make test-db$(NC)      - 💾 Tester la connexion base de données"
+	@echo "  $(GREEN)make status-deployment$(NC) - 📊 Vérifier l'état des déploiements"
 	@echo "  $(GREEN)make clean$(NC)        - 🧹 Nettoyer les fichiers temporaires"
 	@echo "  $(GREEN)make status$(NC)       - 📊 Afficher le statut du système"
 	@echo "  $(GREEN)make components$(NC)   - 📋 Afficher les composants Azure"
@@ -124,6 +130,36 @@ validate:
 	@chmod +x $(SCRIPTS_DIR)/deployment-validate.sh
 	@$(SCRIPTS_DIR)/deployment-validate.sh
 
+## deploy-bicep: 🏗️ Déploiement infrastructure complète avec Bicep
+deploy-bicep:
+	@echo "$(CYAN)Déploiement infrastructure complète avec Bicep...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure.sh
+	@$(SCRIPTS_DIR)/deploy-complete-infrastructure.sh
+
+## deploy-dev03: 🆕 Déploiement nouveau groupe dev-03 complet
+deploy-dev03:
+	@echo "$(CYAN)Déploiement infrastructure complète vers dev-03...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev03.sh
+	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev03.sh
+
+## deploy-dev04: 🆕 Déploiement nouveau groupe dev-04 complet
+deploy-dev04:
+	@echo "$(CYAN)Déploiement infrastructure complète vers dev-04...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev04.sh
+	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev04.sh
+
+## deploy-dev05: 🆕 Déploiement nouveau groupe dev-05 complet
+deploy-dev05:
+	@echo "$(CYAN)Déploiement infrastructure complète vers dev-05...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-complete-infrastructure-dev05.sh
+	@$(SCRIPTS_DIR)/deploy-complete-infrastructure-dev05.sh
+
+## deploy-app-dev05: 🚀 Déployer l'application vers dev-05
+deploy-app-dev05:
+	@echo "$(CYAN)Déploiement de l'application vers dev-05...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/deploy-app-dev05.sh
+	@$(SCRIPTS_DIR)/deploy-app-dev05.sh
+
 ## test-config: 🧪 Tester la configuration
 test-config:
 	@echo "$(CYAN)Test de la configuration...$(NC)"
@@ -138,6 +174,24 @@ test-db:
 	else \
 		echo "$(RED)❌ Fichier .env.local non trouvé. Exécutez d'abord: make setup$(NC)"; \
 	fi
+
+## status-deployment: 📊 Vérifier l'état des déploiements
+status-deployment:
+	@echo "$(CYAN)Vérification de l'état des déploiements Azure...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📊 DÉPLOIEMENTS EN COURS:$(NC)"
+	@az deployment sub list --query "[?properties.provisioningState=='Running'].{Name:name, State:properties.provisioningState, Started:properties.timestamp, Location:location}" --output table 2>/dev/null || echo "$(RED)❌ Erreur lors de la récupération des déploiements$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📊 DERNIERS DÉPLOIEMENTS (Tous états):$(NC)"
+	@az deployment sub list --query "[?contains(name, 'complete-infrastructure')].{Name:name, State:properties.provisioningState, Started:properties.timestamp}" --output table --top 10 2>/dev/null || echo "$(RED)❌ Erreur lors de la récupération des déploiements$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🏗️ RESOURCE GROUPS CHATBOTTEZ:$(NC)"
+	@az group list --query "[?contains(name, 'chatbottez')].{Name:name, Location:location, State:properties.provisioningState}" --output table 2>/dev/null || echo "$(RED)❌ Erreur lors de la récupération des groupes de ressources$(NC)"
+	@echo ""
+	@echo "$(YELLOW)💡 COMMANDES UTILES:$(NC)"
+	@echo "  • Surveiller un déploiement: $(GREEN)az deployment sub show --name <DEPLOYMENT_NAME>$(NC)"
+	@echo "  • Voir les erreurs: $(GREEN)az deployment sub show --name <DEPLOYMENT_NAME> --query 'properties.error'$(NC)"
+	@echo "  • Lister les ressources: $(GREEN)az resource list --resource-group <RG_NAME> --output table$(NC)"
 
 # ==================================================================
 # 🧹 COMMANDES UTILITAIRES
@@ -187,6 +241,16 @@ status:
 	else \
 		echo "  ❌ Non connecté à Azure (az login requis)"; \
 	fi
+	@echo ""
+	@echo "$(YELLOW)🚀 Déploiements en cours:$(NC)"
+	@if az deployment sub list --query "[?properties.provisioningState=='Running' && contains(name, 'chatbottez')]" --output table >/dev/null 2>&1; then \
+		az deployment sub list --query "[?properties.provisioningState=='Running' && contains(name, 'chatbottez')].{Name:name, State:properties.provisioningState}" --output table 2>/dev/null || echo "  ✅ Aucun déploiement en cours"; \
+	else \
+		echo "  ✅ Aucun déploiement en cours"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)📦 Resource Groups ChatBottez:$(NC)"
+	@az group list --query "[?contains(name, 'chatbottez')].{Name:name, Location:location}" --output table 2>/dev/null || echo "  ❌ Erreur lors de la récupération"
 	@echo ""
 
 ## info: ℹ️ Informations sur l'architecture

@@ -1,0 +1,234 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
+  <diagram name="Complete Architecture - Client to Infrastructure" id="complete-architecture">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="ChatBottez GPT-4.1 - Architecture Complète Client-to-Infrastructure" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#0078D4;" parent="1" vertex="1">
+          <mxGeometry x="400" y="10" width="800" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Client Layer -->
+        <mxCell id="client-layer" value="Client Layer - Microsoft Teams Users" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#0078D4;fillColor=#E1F5FE;fontSize=16;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="50" y="70" width="1500" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Teams Desktop -->
+        <mxCell id="teams-desktop" value="Microsoft Teams&#xa;Desktop Client" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="110" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Teams Web -->
+        <mxCell id="teams-web" value="Microsoft Teams&#xa;Web Client" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="270" y="110" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Teams Mobile -->
+        <mxCell id="teams-mobile" value="Microsoft Teams&#xa;Mobile App" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="110" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- User Personas -->
+        <mxCell id="user-personas" value="👥 User Personas:&#xa;• Enterprise Users&#xa;• Developers&#xa;• Business Analysts&#xa;• Content Creators&#xa;&#xa;💬 Chat Experience:&#xa;• Natural language queries&#xa;• 300 questions/month quota&#xa;• Real-time responses&#xa;• Quota status feedback" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;fillColor=#F1F8E9;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="620" y="100" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Marketplace Integration -->
+        <mxCell id="marketplace-integration" value="🏪 Microsoft Commercial Marketplace:&#xa;• SaaS Subscription Model&#xa;• 300 questions/month plan&#xa;• Automated billing&#xa;• License management&#xa;• Usage tracking" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF6D00;fillColor=#FFF3E0;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="850" y="100" width="220" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Partner Center -->
+        <mxCell id="partner-center" value="Partner Center&#xa;• Offer Management&#xa;• Billing Configuration&#xa;• Analytics Dashboard&#xa;• Customer Management" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#E65100;fillColor=#FFF3E0;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="100" width="180" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Teams Admin -->
+        <mxCell id="teams-admin" value="Teams Admin Center&#xa;• App Deployment&#xa;• Permissions&#xa;• Policies" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9C27B0;fillColor=#F3E5F5;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="1310" y="100" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Application Layer -->
+        <mxCell id="app-layer" value="Application Layer - ChatBottez GPT-4.1 Bot" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#2E7D32;fillColor=#E8F5E8;fontSize=16;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="50" y="220" width="1500" height="200" as="geometry" />
+        </mxCell>
+        
+        <!-- Bot Framework -->
+        <mxCell id="bot-framework" value="Microsoft Bot Framework&#xa;Teams AI Library" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#388E3C;fillColor=#C8E6C9;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Express.js Server -->
+        <mxCell id="express-server" value="Express.js Server&#xa;Node.js Runtime&#xa;Port: 3978" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#388E3C;fillColor=#C8E6C9;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="100" y="330" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Middleware Stack -->
+        <mxCell id="middleware-stack" value="Middleware Stack:&#xa;&#xa;🛡️ Quota Usage Middleware&#xa;• Check remaining quota&#xa;• Track usage events&#xa;• Block over-quota requests&#xa;&#xa;🔐 Authentication Middleware&#xa;• Teams token validation&#xa;• Marketplace webhook auth&#xa;&#xa;📊 Audit Logging Middleware&#xa;• Request/response logging&#xa;• Security event tracking" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF9800;fillColor=#FFF8E1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="290" y="260" width="200" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Business Logic -->
+        <mxCell id="business-logic" value="Business Logic Services:&#xa;&#xa;🎯 Chat Processing Service&#xa;• Natural language understanding&#xa;• Context management&#xa;• Response generation&#xa;&#xa;📊 Subscription Service&#xa;• User subscription lookup&#xa;• Quota management&#xa;• Usage tracking&#xa;&#xa;🔄 Metering Client&#xa;• Marketplace usage events&#xa;• Batch processing&#xa;• Retry logic" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="520" y="260" width="200" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- API Endpoints -->
+        <mxCell id="api-endpoints" value="API Endpoints:&#xa;&#xa;📨 /api/messages&#xa;• Teams bot messages&#xa;• Quota enforcement&#xa;&#xa;🔗 Marketplace Webhooks:&#xa;• /marketplace/resolve&#xa;• /marketplace/{id}/activate&#xa;• /marketplace/{id}/update&#xa;• /marketplace/{id}/deactivate&#xa;&#xa;🔍 /health&#xa;• Health check endpoint" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#7B1FA2;fillColor=#F3E5F5;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="750" y="260" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Deployment -->
+        <mxCell id="app-deployment" value="Deployment:&#xa;&#xa;☁️ Azure App Service&#xa;• Node.js 18+ runtime&#xa;• Auto-scaling enabled&#xa;• SSL certificates&#xa;&#xa;🐳 Container Option&#xa;• Docker support&#xa;• Azure Container Apps&#xa;&#xa;🔧 Configuration:&#xa;• Environment variables&#xa;• Key Vault integration&#xa;• Application Insights" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#607D8B;fillColor=#ECEFF1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="960" y="260" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Teams Manifest -->
+        <mxCell id="teams-manifest" value="Teams App Package:&#xa;&#xa;📱 App Manifest&#xa;• Bot capabilities&#xa;• Permissions&#xa;• Icons &amp; metadata&#xa;&#xa;🔐 App Registration&#xa;• Azure AD app&#xa;• Bot Framework registration&#xa;• OAuth permissions&#xa;&#xa;📦 Distribution&#xa;• App catalog&#xa;• Store submission&#xa;• Side-loading" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#795548;fillColor=#EFEBE9;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="1170" y="260" width="180" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- AI Layer -->
+        <mxCell id="ai-layer" value="AI &amp; Intelligence Layer" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#E65100;fillColor=#FFF3E0;fontSize=16;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="50" y="450" width="1500" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- Azure OpenAI -->
+        <mxCell id="azure-openai" value="Azure OpenAI Service" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#F57C00;fillColor=#FFF8E1;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="490" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- GPT Models -->
+        <mxCell id="gpt-models" value="GPT-4 Models:&#xa;• gpt-4 (latest)&#xa;• gpt-4-turbo&#xa;• Custom fine-tuned models" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF9800;fillColor=#FFF8E1;fontSize=11;align=left;" parent="1" vertex="1">
+          <mxGeometry x="100" y="540" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- AI Configuration -->
+        <mxCell id="ai-config" value="AI Configuration:&#xa;&#xa;⚙️ Model Parameters:&#xa;• Temperature: 0.7&#xa;• Max tokens: 2048&#xa;• System prompt loaded&#xa;&#xa;🎯 Prompt Engineering:&#xa;• Context injection&#xa;• Role-based prompts&#xa;• Response formatting&#xa;&#xa;📊 Token Management:&#xa;• Cost optimization&#xa;• Usage tracking&#xa;• Rate limiting" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;fillColor=#F1F8E9;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="330" y="490" width="180" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Content Safety -->
+        <mxCell id="content-safety" value="Content Safety:&#xa;&#xa;🛡️ Azure Content Safety&#xa;• Harmful content detection&#xa;• PII detection&#xa;• Content filtering&#xa;&#xa;🔍 Custom Filters:&#xa;• Business policy enforcement&#xa;• Compliance checking&#xa;• Brand safety" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#C62828;fillColor=#FFEBEE;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="540" y="490" width="160" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Vector Search -->
+        <mxCell id="vector-search" value="Knowledge Base:&#xa;&#xa;🔍 Azure Cognitive Search&#xa;• Vector embeddings&#xa;• Semantic search&#xa;• Document indexing&#xa;&#xa;📚 Knowledge Sources:&#xa;• Company documents&#xa;• FAQs&#xa;• Product catalogs&#xa;• Technical docs" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="730" y="490" width="160" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- LLM Analytics -->
+        <mxCell id="llm-analytics" value="AI Analytics:&#xa;&#xa;📊 Usage Analytics:&#xa;• Query patterns&#xa;• Response quality&#xa;• User satisfaction&#xa;&#xa;🎯 Model Performance:&#xa;• Latency monitoring&#xa;• Accuracy metrics&#xa;• Cost analysis&#xa;&#xa;🔄 Continuous Learning:&#xa;• Feedback loops&#xa;• Model updates&#xa;• A/B testing" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#9C27B0;fillColor=#F3E5F5;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="920" y="490" width="160" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- API Management Layer -->
+        <mxCell id="apim-layer" value="API Management &amp; Gateway Layer" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF5722;fillColor=#FFF3E0;fontSize=16;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="50" y="630" width="1500" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- APIM Gateway -->
+        <mxCell id="apim-gateway" value="Azure API Management&#xa;apim-chatbottez-gpt-4-1-dev-02" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#D84315;fillColor=#FFF3E0;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="670" width="220" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Quota Policies -->
+        <mxCell id="quota-policies" value="Quota Management:&#xa;&#xa;📊 Policy Configuration:&#xa;• quota-by-key (subscription)&#xa;• 300 requests per month&#xa;• Rolling window reset&#xa;&#xa;🚫 Enforcement:&#xa;• HTTP 429 on exceeded&#xa;• Graceful degradation&#xa;• Usage headers returned" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1976D2;fillColor=#E3F2FD;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="350" y="670" width="180" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Rate Limiting -->
+        <mxCell id="rate-limiting" value="Rate Limiting:&#xa;&#xa;⚡ Throttling Policies:&#xa;• 10 requests/minute&#xa;• Burst handling&#xa;• Circuit breaker&#xa;&#xa;🔧 Load Balancing:&#xa;• Multiple backend pools&#xa;• Health checks&#xa;• Failover logic" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF9800;fillColor=#FFF8E1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="560" y="670" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Security Policies -->
+        <mxCell id="security-policies" value="Security Policies:&#xa;&#xa;🔐 Authentication:&#xa;• JWT validation&#xa;• API key management&#xa;• OAuth 2.0 flows&#xa;&#xa;🛡️ Protection:&#xa;• CORS policies&#xa;• IP filtering&#xa;• DDoS protection" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#7B1FA2;fillColor=#F3E5F5;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="750" y="670" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Analytics -->
+        <mxCell id="apim-analytics" value="API Analytics:&#xa;&#xa;📈 Usage Metrics:&#xa;• Request volume&#xa;• Response times&#xa;• Error rates&#xa;&#xa;👥 User Analytics:&#xa;• Subscription usage&#xa;• Popular endpoints&#xa;• Geographic distribution" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#4CAF50;fillColor=#F1F8E9;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="940" y="670" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Infrastructure Layer (Reference to existing) -->
+        <mxCell id="infra-layer" value="Infrastructure Layer (Azure Backend - See azure-infrastructure-diagram.drawio)" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#795548;fillColor=#EFEBE9;fontSize=16;fontStyle=1;verticalAlign=middle;dashed=1;dashPattern=5 5;" parent="1" vertex="1">
+          <mxGeometry x="50" y="780" width="1500" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Data Flow Arrows -->
+        
+        <!-- Users to Bot -->
+        <mxCell id="flow1" value="Chat Messages" style="endArrow=classic;html=1;rounded=0;strokeColor=#0078D4;strokeWidth=3;" parent="1" source="teams-desktop" target="bot-framework" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Bot to AI -->
+        <mxCell id="flow2" value="AI Requests" style="endArrow=classic;html=1;rounded=0;strokeColor=#E65100;strokeWidth=3;" parent="1" source="business-logic" target="azure-openai" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="400" as="sourcePoint" />
+            <mxPoint x="300" y="500" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="620" y="430" />
+              <mxPoint x="200" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- APIM Flow -->
+        <mxCell id="flow3" value="API Gateway" style="endArrow=classic;html=1;rounded=0;strokeColor=#FF5722;strokeWidth=2;" parent="1" source="apim-gateway" target="express-server" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="600" as="sourcePoint" />
+            <mxPoint x="200" y="500" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="150" y="600" />
+              <mxPoint x="150" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Marketplace Integration -->
+        <mxCell id="flow4" value="Billing Events" style="endArrow=classic;html=1;rounded=0;strokeColor=#FF6D00;strokeWidth=2;dashed=1;" parent="1" source="business-logic" target="marketplace-integration" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="200" as="sourcePoint" />
+            <mxPoint x="900" y="150" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="700" y="200" />
+              <mxPoint x="900" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend Box -->
+        <mxCell id="legend-box" value="Data Flow Legend" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#333333;fillColor=#F8F9FA;fontSize=12;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="670" width="200" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend1" value="──── User Interactions" style="text;html=1;strokeColor=#0078D4;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;strokeWidth=3;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="690" width="180" height="10" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend2" value="──── AI Processing" style="text;html=1;strokeColor=#E65100;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;strokeWidth=3;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="705" width="180" height="10" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend3" value="- - - - Billing Integration" style="text;html=1;strokeColor=#FF6D00;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="720" width="180" height="10" as="geometry" />
+        </mxCell>
+        
+        <!-- Status Info -->
+        <mxCell id="status-info" value="Current Status: v1.6.0-step5-wsl-validation&#xa;✅ Infrastructure Deployed&#xa;⚠️ Application Deployment Pending&#xa;⚠️ Azure OpenAI Configuration Needed&#xa;⚠️ Teams App Registration Required" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#37474F;fillColor=#ECEFF1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="1360" y="670" width="180" height="70" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
