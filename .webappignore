@@ -1,3 +1,4 @@
+# TeamsFx native deployment - Ignore files for Azure App Service
 .webappignore
 .fx
 .deployment
@@ -8,6 +9,30 @@
 .vscode
 *.js.map
 *.ts.map
+.git/
+.gitignore
+src/
+tests/
+scripts/
+docs/
+README.md
+*.md
+*.log
+.env*
+!env/.env.dev06
+tsconfig.json
+jest.config.js
+.eslintrc*
+.prettier*
+deploy/
+*.zip
+LogFiles/
+deployments/
+devTools/
+appPackage/
+infra/
+env/
+!env/.env.dev06
 *.ts
 .git*
 .tsbuildinfo

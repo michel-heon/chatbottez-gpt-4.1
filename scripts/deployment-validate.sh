@@ -1,12 +1,18 @@
 #!/bin/bash
 # =================================================================
-# Validation complète du déploiement Azure - Bash
+# Validation complète du déploiement Azure - Bash (DEV-06 aware)
+# =================================================================
+# Améliorations:
+#  - Suppression dépendance powershell.exe (Linux compatible)
+#  - Auto-détection des ressources (Web App, Key Vault, Postgres)
+#  - Paramètres CLI (--resource-group, --webapp, --kv, --postgres)
+#  - Vérifications supplémentaires: App Settings, secrets KV, endpoints HTTP
+#  - Résumé structuré avec sections et statut global
 # =================================================================
 
-set -e
+set -euo pipefail
 
-source scripts/config-loader.sh
-
+# Couleurs
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -14,181 +20,208 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-print_header() {
-    echo -e "${CYAN}$1${NC}"
-}
-
-print_check() {
-    echo -e "${BLUE}[CHECK]${NC} $1"
-}
-
-print_pass() {
-    echo -e "${GREEN}  ✅ $1${NC}"
-}
-
-print_fail() {
-    echo -e "${RED}  ❌ $1${NC}"
-}
-
-print_info() {
-    echo -e "${YELLOW}  ℹ️  $1${NC}"
-}
+print_header() { echo -e "${CYAN}$1${NC}"; }
+print_check()  { echo -e "${BLUE}[CHECK]${NC} $1"; }
+print_pass()   { echo -e "${GREEN}  ✅ $1${NC}"; }
+print_fail()   { echo -e "${RED}  ❌ $1${NC}"; }
+print_warn()   { echo -e "${YELLOW}  ⚠️  $1${NC}"; }
+print_info()   { echo -e "${YELLOW}  ℹ️  $1${NC}"; }
 
 CHECKS_PASSED=0
 CHECKS_TOTAL=0
+CRITICAL_FAILED=0
 
-run_check() {
-    local description="$1"
-    local command="$2"
-    
-    CHECKS_TOTAL=$((CHECKS_TOTAL + 1))
-    print_check "$description"
-    
-    if eval "$command" &> /dev/null; then
-        print_pass "OK"
-        CHECKS_PASSED=$((CHECKS_PASSED + 1))
-        return 0
+RG_DEFAULT="rg-chatbottez-gpt-4-1-dev-06"
+RESOURCE_GROUP="$RG_DEFAULT"
+WEBAPP_NAME=""
+KEY_VAULT_NAME=""
+POSTGRES_NAME=""
+HEALTH_PATH="/health"
+SKIP_HTTP=false
+OUTPUT_JSON=false
+
+usage(){
+  cat <<EOF
+Usage: $0 [options]
+
+Options:
+  -g, --resource-group <name>   Resource group (default: $RG_DEFAULT)
+  -w, --webapp <name>           Web App name (auto-détection si omis)
+  -k, --key-vault <name>        Key Vault name (auto-détection si omis)
+  -p, --postgres <name>         PostgreSQL flexible server name (auto-détection si omis)
+      --health-path <path>      Endpoint santé (default: /health)
+      --skip-http               Ne pas tester les endpoints HTTP
+      --json                    Sortie finale JSON (résumé)
+  -h, --help                    Aide
+
+Exemples:
+  $0
+  $0 -g rg-chatbottez-gpt-4-1-dev-06 --json
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -g|--resource-group) RESOURCE_GROUP="$2"; shift 2;;
+    -w|--webapp) WEBAPP_NAME="$2"; shift 2;;
+    -k|--key-vault) KEY_VAULT_NAME="$2"; shift 2;;
+    -p|--postgres) POSTGRES_NAME="$2"; shift 2;;
+    --health-path) HEALTH_PATH="$2"; shift 2;;
+    --skip-http) SKIP_HTTP=true; shift;;
+    --json) OUTPUT_JSON=true; shift;;
+    -h|--help) usage; exit 0;;
+    *) print_fail "Argument inconnu: $1"; usage; exit 1;;
+  esac
+done
+
+RESULT_JSON_TMP=$(mktemp)
+
+declare -A RESULTS
+record_result(){
+  local key="$1"; local status="$2"; RESULTS["$key"]="$status";
+}
+
+run_check(){
+  local key="$1"; local description="$2"; local cmd="$3"; local critical="${4:-false}";
+  CHECKS_TOTAL=$((CHECKS_TOTAL+1))
+  print_check "$description"
+  if eval "$cmd" &>/dev/null; then
+    print_pass "$description"
+    CHECKS_PASSED=$((CHECKS_PASSED+1))
+    record_result "$key" "pass"
+  else
+    if [ "$critical" = true ]; then
+      print_fail "$description"
+      record_result "$key" "fail"
+      CRITICAL_FAILED=1
     else
-        print_fail "ÉCHEC"
-        return 1
+      print_warn "$description (échec non critique)"
+      record_result "$key" "warn"
     fi
+  fi
+  return 0
 }
 
 echo ""
 print_header "================================================================="
-print_header "🔍 Validation Complète du Déploiement Azure"
+print_header "🔍 Validation Complète du Déploiement Azure (DEV-06)"
 print_header "================================================================="
-echo ""
 
-# Charger la configuration
-if ! load_azure_config &> /dev/null; then
-    print_fail "Impossible de charger la configuration"
-    exit 1
+# 1. Pré-requis
+run_check prereq_az "Azure CLI installé" "command -v az" true
+run_check prereq_login "Connexion Azure active" "az account show" true
+run_check rg_exists "Groupe de ressources existe ($RESOURCE_GROUP)" "az group show -n '$RESOURCE_GROUP'" true
+
+# Auto-détection ressources si non fournies
+if [[ -z "$WEBAPP_NAME" ]]; then
+  WEBAPP_NAME=$(az webapp list -g "$RESOURCE_GROUP" --query "[0].name" -o tsv 2>/dev/null || true)
+fi
+if [[ -z "$KEY_VAULT_NAME" ]]; then
+  KEY_VAULT_NAME=$(az keyvault list -g "$RESOURCE_GROUP" --query "[0].name" -o tsv 2>/dev/null || true)
+fi
+if [[ -z "$POSTGRES_NAME" ]]; then
+  POSTGRES_NAME=$(az postgres flexible-server list -g "$RESOURCE_GROUP" --query "[0].name" -o tsv 2>/dev/null || true)
 fi
 
-print_header "📋 Résumé de la Configuration"
-echo "   Projet: $PROJECT_NAME"
-echo "   Environnement: $ENVIRONMENT"
-echo "   Région: $AZURE_LOCATION"
-echo "   Groupe de ressources: $RESOURCE_GROUP_NAME"
-echo ""
+print_header "📋 Ressources détectées"
+echo "  Resource Group : $RESOURCE_GROUP"
+echo "  Web App        : ${WEBAPP_NAME:-<non trouvé>}"
+echo "  Key Vault      : ${KEY_VAULT_NAME:-<non trouvé>}"
+echo "  PostgreSQL     : ${POSTGRES_NAME:-<non trouvé>}"
 
-print_header "🔧 Validation de l'Infrastructure"
+# 2. Ressources principales
+[[ -n "$WEBAPP_NAME" ]] && run_check webapp_exists "Web App existe" "az webapp show -g '$RESOURCE_GROUP' -n '$WEBAPP_NAME'" true || record_result webapp_exists fail
+[[ -n "$KEY_VAULT_NAME" ]] && run_check kv_exists "Key Vault existe" "az keyvault show -n '$KEY_VAULT_NAME'" true || record_result kv_exists fail
+[[ -n "$POSTGRES_NAME" ]] && run_check pg_exists "PostgreSQL existe" "az postgres flexible-server show -g '$RESOURCE_GROUP' -n '$POSTGRES_NAME'" true || record_result pg_exists fail
 
-# Tests de base
-run_check "Azure CLI installé" "command -v az"
-run_check "Connexion à Azure active" "az account show"
-run_check "Groupe de ressources existe" "az group show --name '$RESOURCE_GROUP_NAME'"
+# 3. Secrets Key Vault
+if [[ -n "$KEY_VAULT_NAME" ]]; then
+  run_check kv_secret_pg_conn "Secret Chaîne Connexion (postgres-app-connection-string)" "az keyvault secret show --vault-name '$KEY_VAULT_NAME' --name 'postgres-app-connection-string'" false
+  run_check kv_secret_openai "Secret OpenAI (azure-openai-key)" "az keyvault secret show --vault-name '$KEY_VAULT_NAME' --name 'azure-openai-key'" false
+  run_check kv_secret_bot "Secret Bot (bot-client-secret)" "az keyvault secret show --vault-name '$KEY_VAULT_NAME' --name 'bot-client-secret'" false
+fi
 
-# Extraire les informations du déploiement
-if [ -f "deployment-outputs.json" ]; then
-    KEY_VAULT_NAME=$(powershell.exe -Command "(Get-Content deployment-outputs.json | ConvertFrom-Json).keyVaultName.value" | tr -d '\r')
-    SERVER_NAME=$(powershell.exe -Command "(Get-Content deployment-outputs.json | ConvertFrom-Json).serverName.value" | tr -d '\r')
-    SERVER_FQDN=$(powershell.exe -Command "(Get-Content deployment-outputs.json | ConvertFrom-Json).serverFQDN.value" | tr -d '\r')
-    
-    print_header "🗄️  Validation des Ressources"
-    
-    # Tests des ressources
-    run_check "Serveur PostgreSQL existe" "az postgres flexible-server show --name '$SERVER_NAME' --resource-group '$RESOURCE_GROUP_NAME'"
-    run_check "Key Vault existe" "az keyvault show --name '$KEY_VAULT_NAME'"
-    run_check "Permissions Key Vault configurées" "az keyvault secret show --vault-name '$KEY_VAULT_NAME' --name 'postgres-app-connection-string'"
-    
-    print_header "🔗 Validation de la Configuration"
-    
-    # Tests de configuration
-    run_check "Fichier env/.env.local existe" "[ -f 'env/.env.local' ]"
-    run_check "DATABASE_URL configuré" "grep -q '^DATABASE_URL=' env/.env.local"
-    run_check "Variables Azure configurées" "grep -q '^AZURE_DATABASE_SERVER=' env/.env.local"
-    
-    # Test de connectivité réseau
-    print_header "🌐 Tests de Connectivité"
-    
-    print_check "Résolution DNS du serveur PostgreSQL"
-    if nslookup "$SERVER_FQDN" &> /dev/null; then
-        print_pass "Résolution DNS OK"
-        CHECKS_PASSED=$((CHECKS_PASSED + 1))
-    else
-        print_fail "Résolution DNS échouée"
-    fi
-    CHECKS_TOTAL=$((CHECKS_TOTAL + 1))
-    
-    print_check "Port PostgreSQL accessible"
-    if timeout 5 bash -c "</dev/tcp/$SERVER_FQDN/5432" &> /dev/null; then
-        print_pass "Port 5432 accessible"
-        CHECKS_PASSED=$((CHECKS_PASSED + 1))
-    else
-        print_info "Port 5432 non accessible (firewall Azure)"
-    fi
-    CHECKS_TOTAL=$((CHECKS_TOTAL + 1))
-    
-    # Test de connexion à la base
-    if [ -f "env/.env.local" ]; then
-        DATABASE_URL=$(grep '^DATABASE_URL=' env/.env.local | cut -d'=' -f2)
-        
-        print_header "💾 Test de Base de Données"
-        
-        print_check "Chaîne de connexion valide"
-        if [[ "$DATABASE_URL" =~ ^postgresql:// ]]; then
-            print_pass "Format de chaîne de connexion correct"
-            CHECKS_PASSED=$((CHECKS_PASSED + 1))
-        else
-            print_fail "Format de chaîne de connexion incorrect"
-        fi
-        CHECKS_TOTAL=$((CHECKS_TOTAL + 1))
-    fi
-    
+# 4. App Settings
+if [[ -n "$WEBAPP_NAME" ]]; then
+  run_check appsetting_openai "AppSetting AZURE_OPENAI_API_KEY présent" "az webapp config appsettings list -g '$RESOURCE_GROUP' -n '$WEBAPP_NAME' --query "[?name=='AZURE_OPENAI_API_KEY']" -o tsv" false
+  run_check appsetting_appid "AppSetting MICROSOFT_APP_ID présent" "az webapp config appsettings list -g '$RESOURCE_GROUP' -n '$WEBAPP_NAME' --query "[?name=='MICROSOFT_APP_ID']" -o tsv" false
+  run_check appsetting_apppw "AppSetting MICROSOFT_APP_PASSWORD présent" "az webapp config appsettings list -g '$RESOURCE_GROUP' -n '$WEBAPP_NAME' --query "[?name=='MICROSOFT_APP_PASSWORD']" -o tsv" false
+  run_check appsetting_port "AppSetting PORT présent" "az webapp config appsettings list -g '$RESOURCE_GROUP' -n '$WEBAPP_NAME' --query "[?name=='PORT']" -o tsv" false
+fi
+
+# 5. Tests HTTP
+HTTP_STATUS_MAIN=""
+HTTP_STATUS_HEALTH=""
+if ! $SKIP_HTTP && [[ -n "$WEBAPP_NAME" ]]; then
+  BASE_URL="https://${WEBAPP_NAME}.azurewebsites.net"
+  print_header "🌐 Tests HTTP ($BASE_URL)"
+  if command -v curl >/dev/null; then
+    print_check "Endpoint racine"; HTTP_STATUS_MAIN=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL" || echo "000")
+    if [[ "$HTTP_STATUS_MAIN" =~ ^2|3[0-9]{2}$ ]]; then print_pass "HTTP / => $HTTP_STATUS_MAIN"; CHECKS_PASSED=$((CHECKS_PASSED+1)); record_result http_root pass; else print_warn "HTTP / => $HTTP_STATUS_MAIN"; CHECKS_TOTAL=$((CHECKS_TOTAL+1)); record_result http_root warn; fi
+    print_check "Endpoint santé ($HEALTH_PATH)"; HTTP_STATUS_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL$HEALTH_PATH" || echo "000")
+    if [[ "$HTTP_STATUS_HEALTH" =~ ^2|3[0-9]{2}$ ]]; then print_pass "HTTP $HEALTH_PATH => $HTTP_STATUS_HEALTH"; CHECKS_PASSED=$((CHECKS_PASSED+1)); record_result http_health pass; else print_warn "HTTP $HEALTH_PATH => $HTTP_STATUS_HEALTH"; CHECKS_TOTAL=$((CHECKS_TOTAL+1)); record_result http_health warn; fi
+  else
+    print_warn "curl non installé - tests HTTP ignorés"; record_result http_root skipped; record_result http_health skipped
+  fi
+fi
+
+# 6. Résumé
+SUCCESS=false
+if [[ $CHECKS_PASSED -eq $CHECKS_TOTAL ]]; then
+  STATUS_GLOBAL="OK"
+  SUCCESS=true
+elif [[ $CHECKS_PASSED -ge $(( CHECKS_TOTAL * 3 / 4 )) ]]; then
+  STATUS_GLOBAL="PARTIEL"
 else
-    print_fail "Fichier deployment-outputs.json non trouvé"
-    print_info "Exécutez d'abord le déploiement"
+  STATUS_GLOBAL="ECHEC"
 fi
 
-# Validation des scripts
-print_header "📜 Validation des Scripts"
-
-run_check "Script de déploiement exécutable" "[ -x 'scripts/azure-deploy.sh' ]"
-run_check "Script de configuration exécutable" "[ -x 'scripts/azure-configure.sh' ]"
-run_check "Module de configuration disponible" "[ -f 'scripts/config-loader.sh' ]"
-
-# Résumé final
-echo ""
 print_header "📊 Résumé de la Validation"
-echo ""
+echo "  Vérifications passées : $CHECKS_PASSED/$CHECKS_TOTAL"
+echo "  Statut global         : $STATUS_GLOBAL"
 
-if [ $CHECKS_PASSED -eq $CHECKS_TOTAL ]; then
-    print_header "🎉 TOUS LES TESTS RÉUSSIS!"
-    echo -e "${GREEN}   $CHECKS_PASSED/$CHECKS_TOTAL vérifications passées${NC}"
-    echo ""
-    print_header "✨ Système prêt pour utilisation"
-    echo ""
-    echo -e "${CYAN}Commandes suivantes recommandées:${NC}"
-    echo "1. Configurer l'accès réseau:"
-    echo "   ./scripts/setup-database-firewall.sh"
-    echo ""
-    echo "2. Créer les schémas de base de données:"
-    echo "   npm run db:migrate"
-    echo ""
-    echo "3. Démarrer l'application:"
-    echo "   npm run dev"
-    
-elif [ $CHECKS_PASSED -gt $((CHECKS_TOTAL * 3 / 4)) ]; then
-    print_header "⚠️  DÉPLOIEMENT PARTIELLEMENT FONCTIONNEL"
-    echo -e "${YELLOW}   $CHECKS_PASSED/$CHECKS_TOTAL vérifications passées${NC}"
-    echo ""
-    echo -e "${YELLOW}Actions requises:${NC}"
-    echo "- Vérifier les permissions d'accès réseau"
-    echo "- Configurer les règles de pare-feu Azure"
-    
+if $SUCCESS; then
+  print_header "🎉 TOUS LES TESTS CRITIQUES RÉUSSIS"
 else
-    print_header "❌ DÉPLOIEMENT INCOMPLET"
-    echo -e "${RED}   $CHECKS_PASSED/$CHECKS_TOTAL vérifications passées${NC}"
-    echo ""
-    echo -e "${RED}Actions critiques requises:${NC}"
-    echo "- Revoir la configuration du déploiement"
-    echo "- Vérifier les permissions Azure"
-    echo "- Relancer le processus de déploiement"
+  print_header "⚠️  VALIDATION INCOMPLETE"
 fi
 
-echo ""
+print_header "🛠️ Recommandations"
+if [[ "$STATUS_GLOBAL" != "OK" ]]; then
+  [[ -n "$WEBAPP_NAME" && "$HTTP_STATUS_MAIN" == "500" ]] && print_info "Analyser les logs: az webapp log tail -g $RESOURCE_GROUP -n $WEBAPP_NAME"
+  print_info "Vérifier App Settings manquants dans le portail Azure"
+  print_info "Exécuter: ./scripts/sync-openai-key-dev06.sh pour synchroniser la clé OpenAI"
+  print_info "Exécuter: ./scripts/bot-credentials-setup-dev06.sh pour configurer le bot"
+else
+  print_info "Exécuter les tests applicatifs: npm test"
+  print_info "Procéder aux tests E2E Teams et quotas"
+fi
+
+# 7. Sortie JSON optionnelle
+if $OUTPUT_JSON; then
+  {
+    echo '{'
+    echo "  \"resourceGroup\": \"${RESOURCE_GROUP}\"," 
+    echo "  \"webApp\": \"${WEBAPP_NAME}\"," 
+    echo "  \"keyVault\": \"${KEY_VAULT_NAME}\"," 
+    echo "  \"postgres\": \"${POSTGRES_NAME}\"," 
+    echo "  \"http\": { \"root\": \"$HTTP_STATUS_MAIN\", \"health\": \"$HTTP_STATUS_HEALTH\" },"
+    echo "  \"checksPassed\": $CHECKS_PASSED,"
+    echo "  \"checksTotal\": $CHECKS_TOTAL,"
+    echo "  \"status\": \"$STATUS_GLOBAL\","
+    echo '  "results": {'
+    first=true
+    for k in "${!RESULTS[@]}"; do
+      if $first; then first=false; else echo ','; fi
+      echo -n "    \"$k\": \"${RESULTS[$k]}\""
+    done
+    echo ''
+    echo '  }'
+    echo '}'
+  } > "$RESULT_JSON_TMP"
+  print_header "📄 Résultats JSON enregistrés: $RESULT_JSON_TMP"
+fi
+
 print_header "================================================================="
 
 exit 0

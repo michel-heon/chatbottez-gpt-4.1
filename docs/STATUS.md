@@ -1,32 +1,49 @@
-# 📋 Statut Projet ChatBottez GPT-4.1 - Version v1.8.0-step7-dev06-consistency
+# 📋 Statut Projet ChatBottez GPT-4.1 - Version v2.0.0-teamsfx-integrated
 
 ## 🎯 Vue d'ensemble Générale
 
-**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet est en phase de **déploiement DEV-06** avec architecture hybride et mutualisation optimisée des ressources.
+**ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas Microsoft Marketplace. Le projet a intégré le **Microsoft 365 Agents Toolkit (TeamsFx)** comme méthode de déploiement native recommandée, tout en préservant les scripts personnalisés legacy.
 
-**Status actuel** : � Prêt pour déploiement DEV-06 - Infrastructure validée, sécurité renforcée, configuration automatisée
+**Status actuel** : 🌟 TeamsFx intégré - Double approche de déploiement - Configuration native Microsoft 365
 
 ---
 
-## 📊 État des Composants Principaux
+## 🌟 Nouveautés v2.0.0 - Intégration TeamsFx
 
-### ✅ Infrastructure Azure (Architecture DEV-06 Hybride)
+### ✅ Microsoft 365 Agents Toolkit Intégré
 
 | Composant | Status | Détails |
 |-----------|--------|---------|
-| **Resource Group DEV-06** | 🟢 Configuré | • `rg-chatbottez-gpt-4-1-dev-06`<br>• Canada Central<br>• Tags: v1.8.0-step7-dev06-consistency<br>• Ready for deployment |
-| **PostgreSQL Flexible Server** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-pg-{unique}`<br>• Admin: `chatbottez_admin`<br>• Database: `marketplace_quota`<br>• User: `marketplace_user`<br>• Passwords: Sécurisés avec génération dynamique |
+| **TeamsFx CLI** | 🔄 À installer | • Installation: `make teamsfx-install`<br>• Authentification: `make teamsfx-login`<br>• Version requise: @microsoft/teamsfx-cli |
+| **Configuration déclarative** | ✅ Configuré | • Fichier: `m365agents.dev06.yml`<br>• Provision: teamsApp/create + arm/deploy<br>• Deploy: azureAppService/zipDeploy<br>• Bicep: complete-infrastructure-dev06.bicep |
+| **Variables d'environnement** | ✅ Configuré | • Fichier: `env/.env.dev06`<br>• OpenAI: Configuré (gpt-4.1)<br>• Azure: Auto-renseigné par TeamsFx<br>• Bot: Auto-configuré par TeamsFx |
+| **Tâches VS Code** | ✅ Configuré | • Provision DEV-06 (Native)<br>• Deploy DEV-06 (Native)<br>• Intégration avec TeamsFx<br>• Support playground et sandbox |
+| **Makefile TeamsFx** | ✅ Intégré | • 15 nouvelles commandes TeamsFx<br>• Workflow complet: `teamsfx-dev06-full`<br>• Vérifications automatiques<br>• Documentation intégrée |
+
+### � Méthodes de Déploiement Disponibles
+
+| Méthode | Status | Commande | Recommandation |
+|---------|--------|----------|----------------|
+| **TeamsFx Natif** | ✅ Prêt | `make teamsfx-dev06-full` | 🌟 **RECOMMANDÉ** |
+| **Scripts Legacy** | ✅ Maintenu | `make deploy-dev06-full` | 🔧 Compatibilité |
+
+### ✅ Infrastructure Azure (Architecture DEV-06 Hybride) - Inchangée
+
+| Composant | Status | Détails |
+|-----------|--------|---------|
+| **Resource Group DEV-06** | 🟢 Configuré | • `rg-chatbottez-gpt-4-1-dev-06`<br>• Canada Central<br>• Tags: v2.0.0-teamsfx-integrated<br>• Compatible TeamsFx et legacy |
+| **PostgreSQL Flexible Server** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-pg-{unique}`<br>• Admin: `chatbottez_admin`<br>• Database: `marketplace_quota`<br>• User: `marketplace_user`<br>• Compatible avec les deux méthodes |
 | **Azure Key Vault Local** | 🔄 Prêt à déployer | • Nom: `kv-gpt41-{unique}`<br>• Secrets: database-url, app-insights<br>• Permissions: Managed Identity<br>• SKU: Standard |
-| **Azure App Service** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-app-{unique}`<br>• Plan: S1 Standard<br>• Runtime: Node.js<br>• Identity: User-Assigned MI<br>• URL: Auto-configurée |
+| **Azure App Service** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-app-{unique}`<br>• Plan: S1 Standard<br>• Runtime: Node.js<br>• Identity: User-Assigned MI<br>• Compatible iisnode + TeamsFx |
 | **Application Insights** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-ai-{unique}`<br>• Log Analytics intégré<br>• Monitoring complet<br>• Connection string auto |
 | **API Management** | 🔄 Prêt à déployer | • Nom: `chatbottez-gpt41-apim-{unique}`<br>• SKU: Developer<br>• API: /api/v1/messages<br>• Policies: Quota 300/mois + logging |
 
-### 🔗 Ressources Partagées (Mutualisées rg-cotechnoe-ai-01)
+### 🔗 Ressources Partagées (Mutualisées rg-cotechnoe-ai-01) - Mises à jour
 
 | Composant | Status | Détails |
 |-----------|--------|---------|
-| **OpenAI Service Partagé** | ✅ Disponible | • Nom: `openai-cotechnoe`<br>• Endpoint: https://openai-cotechnoe.openai.azure.com/<br>• Deployment: `gpt-4o`<br>• **Coût mutualisé** |
-| **Key Vault Partagé** | ✅ Disponible | • Nom: `kv-cotechno771554451004`<br>• Secret: `azure-openai-api-key`<br>• Accès: Managed Identity reference |
+| **OpenAI Service Partagé** | ✅ Disponible | • Nom: `openai-cotechnoe`<br>• Endpoint: https://openai-cotechnoe.openai.azure.com/<br>• Deployment: `gpt-4.1` (mise à jour)<br>• **Configuration TeamsFx**: env/.env.dev06 |
+| **Key Vault Partagé** | ✅ Disponible | • Nom: `kv-cotechno771554451004`<br>• Secret: `azure-openai-api-key`<br>• Accès: Managed Identity + TeamsFx |
 
 ### 🛠️ Nouveaux Outils et Automatisation
 

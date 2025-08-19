@@ -331,65 +331,8 @@ resource messagesPolicy 'Microsoft.ApiManagement/service/apis/operations/policie
   parent: messagesOperation
   name: 'policy'
   properties: {
-    value: '''
-      <policies>
-          <inbound>
-              <base />
-              <set-variable name="subscription-id" value="@(context.Subscription.Id)" />
-              <quota-by-key
-                  calls="300"
-                  renewal-period="month"
-                  counter-key="@(context.Subscription.Id)"
-                  increment-condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)" />
-              <rate-limit-by-key
-                  calls="60"
-                  renewal-period="60"
-                  counter-key="@(context.Subscription.Id + &quot;-rate&quot;)" />
-              <set-header name="x-apim-subscription-id" exists-action="override">
-                  <value>@(context.Subscription.Id)</value>
-              </set-header>
-          </inbound>
-          <backend>
-              <base />
-          </backend>
-          <outbound>
-              <base />
-              <set-header name="x-quota-remaining" exists-action="override">
-                  <value>@{
-                      var quotaLimit = 300;
-                      var quotaCounter = context.Variables.GetValueOrDefault<int>("quota-counter", 0);
-                      return (quotaLimit - quotaCounter).ToString();
-                  }</value>
-              </set-header>
-              <set-header name="x-quota-total" exists-action="override">
-                  <value>300</value>
-              </set-header>
-          </outbound>
-          <on-error>
-              <base />
-              <choose>
-                  <when condition="@(context.LastError.Source == &quot;quota-by-key&quot;)">
-                      <return-response>
-                          <set-status code="429" reason="Quota Exceeded" />
-                          <set-header name="Content-Type" exists-action="override">
-                              <value>application/json</value>
-                          </set-header>
-                          <set-body>@{
-                              return new JObject(
-                                  new JProperty("error", "Quota Exceeded"),
-                                  new JProperty("message", "You have exceeded your monthly quota of 300 questions. Please upgrade your plan or wait for the quota to reset."),
-                                  new JProperty("details", new JObject(
-                                      new JProperty("quota_limit", 300),
-                                      new JProperty("quota_remaining", 0)
-                                  ))
-                              ).ToString();
-                          }</set-body>
-                      </return-response>
-                  </when>
-              </choose>
-          </on-error>
-      </policies>
-    '''
+    // Rate limit ajusté de 60 -> 10 pour alignement quota minute réduit
+    value: '<policies><inbound><base /><quota-by-key calls="300" renewal-period="P1M" counter-key="@(context.Subscription.Id)" increment-condition="@(context.Response.StatusCode >= 200 &amp;&amp; context.Response.StatusCode &lt; 300)" /><rate-limit-by-key calls="10" renewal-period="60" counter-key="@(context.Subscription.Id + &quot;-rate&quot;)" /></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /><choose><when condition="@(context.LastError.Source == &quot;quota-by-key&quot;)"><return-response><set-status code="429" reason="Quota Exceeded" /><set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header><set-body>{"error":"Quota Exceeded","message":"Monthly quota of 300 requests exceeded"}</set-body></return-response></when></choose></on-error></policies>'
     format: 'xml'
   }
 }
@@ -408,10 +351,11 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
   sku: {
-    name: 'B1'
-    tier: 'Basic'
-    size: 'B1'
-    family: 'B'
+    // Passage B1 -> S1 (Standard) pour capacité accrue
+    name: 'S1'
+    tier: 'Standard'
+    size: 'S1'
+    family: 'S'
     capacity: 1
   }
   properties: {
@@ -476,7 +420,8 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
           value: sharedOpenAIEndpoint
         }
         {
-          name: 'AZURE_OPENAI_KEY'
+          // Alignement avec v1.0.0 : variable attendue par le code (secret synchronisable via scripts/sync-openai-key-dev06.sh)
+          name: 'AZURE_OPENAI_API_KEY'
           value: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=azure-openai-key)'
         }
         {
@@ -506,10 +451,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
   identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
+    type: 'SystemAssigned'
   }
   tags: {
     Environment: environment
@@ -591,6 +533,19 @@ resource appInsightsConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@20
   parent: keyVault
   properties: {
     value: applicationInsights.properties.ConnectionString
+    contentType: 'text/plain'
+    attributes: {
+      enabled: true
+    }
+  }
+}
+
+// Secret Azure OpenAI key (placeholder) - doit être remplacé manuellement ensuite
+resource openaiApiKeySecret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
+  name: 'azure-openai-key'
+  parent: keyVault
+  properties: {
+    value: 'REPLACE_WITH_ACTUAL_KEY'
     contentType: 'text/plain'
     attributes: {
       enabled: true

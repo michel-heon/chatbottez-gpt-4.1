@@ -1,13 +1,22 @@
-# 📋 Guide d'utilisation du Makefile
+# 📋 Guide d'utilisation du Makefile v2.0 - TeamsFx Intégré
 
-Ce document décrit l'utilisation du Makefile pour orchestrer le déploiement et la configuration du système Microsoft Marketplace Quota Management.
+Ce document décrit l'utilisation du Makefile révisé pour orchestrer le déploiement du système ChatBottez GPT-4.1 avec **double approche** : TeamsFx natif et scripts personnalisés.
 
-## 🎯 Vue d'ensemble
+## 🎯 Vue d'ensemble v2.0
 
-Le Makefile fournit une interface unifiée pour :
-- **Configuration initiale** (environnement, base de données, marketplace)
-- **Déploiement Azure** (infrastructure, APIM, Key Vault)
-- **Configuration post-déploiement** (policies, secrets, connexions)
+Le Makefile fournit maintenant **deux méthodes** de déploiement :
+
+### 🌟 **TeamsFx Natif (Recommandé)**
+- **Configuration déclarative** via `m365agents.dev06.yml`
+- **Authentification intégrée** Microsoft 365 et Azure
+- **Déploiement en une commande** : `make teamsfx-dev06-full`
+- **Prévisualisation immédiate** dans Microsoft Teams
+
+### 🔧 **Scripts Personnalisés (Legacy)**
+- **Contrôle granulaire** du déploiement
+- **Scripts Bicep** personnalisés
+- **Compatibilité** avec l'existant
+- **Débogage avancé**
 - **Validation et tests** (15 tests de validation complète)
 
 ## 🚀 Commandes principales

@@ -1,50 +1,92 @@
-# 📚 Documentation ChatBottez GPT-4.1 - Microsoft Marketplace Quota Management
+# 📚 Documentation ChatBottez GPT-4.1 - Microsoft Teams AI Chatbot
 
 ## 🎯 Vue d'ensemble du Projet
 
 **ChatBottez GPT-4.1** est un système de chatbot Teams AI avec gestion de quotas intégrée au Microsoft Commercial Marketplace. Le projet implémente une architecture complète du client Teams jusqu'à l'infrastructure Azure, avec intelligence artificielle via Azure OpenAI.
 
-**Version actuelle** : `v1.8.0-step7-dev06-consistency`  
-**Status** : Infrastructure hybride DEV-06 prête ✅ - Déploiement automatisé ✅ - Ready to deploy 🚀
+**Version actuelle** : `v2.0.0-teamsfx-integrated`  
+**Status** : Infrastructure hybride DEV-06 ✅ - TeamsFx intégré ✅ - Méthodes de déploiement hybrides 🚀
+
+## 🌟 Nouveautés v2.0.0
+
+### **Microsoft 365 Agents Toolkit intégré**
+- ✅ **Déploiement natif TeamsFx** - Méthode recommandée Microsoft
+- ✅ **Configuration déclarative** via `m365agents.dev06.yml`
+- ✅ **Authentification intégrée** Microsoft 365 et Azure
+- ✅ **Prévisualisation immédiate** dans Microsoft Teams
+- ✅ **Gestion automatique** des secrets et ressources
+
+### **Double approche de déploiement**
+1. 🌟 **TeamsFx natif** (recommandé) - `make teamsfx-dev06-full`
+2. 🔧 **Scripts personnalisés** (legacy) - `make deploy-dev06-full`
 
 ## 🚀 Guide de Démarrage Rapide
 
-### Pour les nouveaux utilisateurs
-1. 📖 **[README.md](../README.md)** - Vue d'ensemble et quick start v1.8.0
-2. 🚀 **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** - 🆕 Guide de déploiement DEV-06 (RECOMMANDÉ)
-3. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - Architecture hybride avec mutualisation
-4. 🔧 **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** - Guide complet du Makefile optimisé
-
-### Pour le déploiement immédiat
+### 🌟 Méthode recommandée (TeamsFx natif)
 ```bash
-# Déploiement complet en une commande
-make deploy-dev06-full
+# 1. Configuration initiale
+make setup
+
+# 2. Installation et connexion TeamsFx
+make teamsfx-install
+make teamsfx-login
+
+# 3. Déploiement complet en une commande
+make teamsfx-dev06-full
+
+# 4. Prévisualiser dans Teams
+make teamsfx-preview-dev06
 ```
 
-1. � **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** - 🆕 Guide complet DEV-06
-2. ✅ **[STATUS.md](STATUS.md)** - État v1.8.0 et architecture hybride
-3. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - Architecture avec mutualisation des ressources
+### 🔧 Méthode legacy (scripts personnalisés)
+```bash
+# 1. Configuration initiale
+make setup
+
+# 2. Déploiement complet legacy
+make deploy-dev06-full
+
+# 3. Validation
+make validate
+```
+
+## � Documentation par Priorité
+
+### **�🚀 Déploiement (Choisir une méthode)**
+1. 🌟 **[MAKEFILE_TEAMSFX_INTEGRATION.md](MAKEFILE_TEAMSFX_INTEGRATION.md)** - Guide complet TeamsFx (RECOMMANDÉ)
+2. 🔧 **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** - Guide de déploiement legacy
+3. �️ **[MAKEFILE_GUIDE.md](MAKEFILE_GUIDE.md)** - Guide complet du Makefile
+
+### **🏗️ Architecture et Infrastructure**
+1. 🏗️ **[COMPLETE_ARCHITECTURE.md](COMPLETE_ARCHITECTURE.md)** - Architecture hybride avec mutualisation
+2. ✅ **[STATUS.md](STATUS.md)** - État actuel v2.0.0 et architecture hybride
+3. 🏗️ **[AZURE_INFRASTRUCTURE.md](AZURE_INFRASTRUCTURE.md)** - Infrastructure Azure détaillée
 
 ---
 
 ## 🏗️ Diagrammes d'Architecture DEV-06
 
-### 🆕 Architecture Hybride avec Mutualisation
+### 🆕 Architecture Hybride avec Mutualisation et TeamsFx
 | Diagramme | Description | Format |
 |-----------|-------------|--------|
-| **[DEV06_DEPLOYMENT_GUIDE.md](DEV06_DEPLOYMENT_GUIDE.md)** | 🆕 **Guide complet déploiement DEV-06** | Guide |
+| **[MAKEFILE_TEAMSFX_INTEGRATION.md](MAKEFILE_TEAMSFX_INTEGRATION.md)** | � **Guide complet TeamsFx natif** | Guide |
 | **[complete-architecture-diagram.drawio](complete-architecture-diagram.drawio)** | Architecture hybride avec ressources partagées | Draw.io |
 | **[azure-infrastructure-diagram.drawio](azure-infrastructure-diagram.drawio)** | Infrastructure Azure détaillée | Draw.io |
 
-### Architecture DEV-06 : Ressources
+### Architecture DEV-06 : Ressources avec TeamsFx
 ```
+📦 Configuration TeamsFx
+├── 📝 m365agents.dev06.yml (Déploiement déclaratif)
+├── 🔧 env/.env.dev06 (Variables d'environnement)
+└── ⚙️ .vscode/tasks.json (Tâches VS Code)
+
 📦 rg-chatbottez-gpt-4-1-dev-06 (Nouvelles)
 ├── 🔐 Managed Identity + PostgreSQL + Key Vault Local
 ├── 🚀 App Service S1 + Application Insights
 └── 🛡️ API Management Developer
 
 📦 rg-cotechnoe-ai-01 (Partagées - optimisation coûts)
-├── 🤖 OpenAI Service (gpt-4o)
+├── 🤖 OpenAI Service (gpt-4.1)
 └── 🔐 Key Vault Partagé
 ```
 
@@ -74,6 +116,7 @@ make deploy-dev06-full
 
 | Document | Description | Statut |
 |----------|-------------|---------|
+| **[SCRIPT_NAMING_CONVENTION.md](SCRIPT_NAMING_CONVENTION.md)** | Convention de nommage des scripts (<objet>-<action>.sh) | ✅ Nouveau |
 | **[MIGRATION_COMPLETED.md](MIGRATION_COMPLETED.md)** | Migration PowerShell → Bash complète | ✅ Existant |
 | **[CHANGELOG.md](CHANGELOG.md)** | Historique des modifications | ✅ Existant |
 | **[INSTALL_POSTGRESQL.md](INSTALL_POSTGRESQL.md)** | Guide PostgreSQL pour Windows | ✅ Existant |

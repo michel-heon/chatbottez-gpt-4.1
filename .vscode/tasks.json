@@ -5,6 +5,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Deploy to DEV-06 (Native)",
+            "dependsOn": [
+                "Validate prerequisites (DEV-06)",
+                "Provision (DEV-06)",
+                "Deploy (DEV-06)"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
             "label": "Start Agent (Sandbox)",
             "dependsOn": [
                 "Validate prerequisites (Sandbox)",
@@ -297,6 +306,37 @@
             "command": "launch-desktop-client",
             "args": {
                 "url": "teams.microsoft.com/l/app/${{TEAMS_APP_ID}}?installAppPackage=true"
+            }
+        },
+        {
+            "label": "Validate prerequisites (DEV-06)",
+            "type": "teamsfx",
+            "command": "debug-check-prerequisites",
+            "args": {
+                "prerequisites": [
+                    "nodejs",
+                    "portOccupancy"
+                ],
+                "portOccupancy": [
+                    3978,
+                    9239
+                ]
+            }
+        },
+        {
+            "label": "Provision (DEV-06)",
+            "type": "teamsfx",
+            "command": "provision",
+            "args": {
+                "env": "dev06"
+            }
+        },
+        {
+            "label": "Deploy (DEV-06)",
+            "type": "teamsfx",
+            "command": "deploy",
+            "args": {
+                "env": "dev06"
             }
         }
     ]
