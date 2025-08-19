@@ -1,27 +1,52 @@
-# Architecture Complète - ChatBottez GPT-4.1 (DEV-06)
-## Du Client à l'Infrastructure Hybride
+# Architecture Complète - ChatBottez GPT-4.1 v2.0 (DEV-06)
+## Du Client à l'Infrastructure Hybride avec TeamsFx
 
 ## 📋 Vue d'ensemble
 
-**Version :** v1.8.0-step7-dev06-consistency
-**Architecture :** Hybride avec mutualisation optimisée des ressources
+**Version :** v2.0.0-teamsfx-integrated
+**Architecture :** Hybride avec mutualisation optimisée et double approche de déploiement
 
-Ce document présente l'**architecture complète end-to-end** du système ChatBottez GPT-4.1 version DEV-06, depuis l'utilisateur final dans Microsoft Teams jusqu'à l'infrastructure Azure hybride, incluant la stratégie de mutualisation des ressources coûteuses (OpenAI, Key Vault partagé).
+Ce document présente l'**architecture complète end-to-end** du système ChatBottez GPT-4.1 version v2.0, intégrant le **Microsoft 365 Agents Toolkit (TeamsFx)** comme méthode de déploiement native, tout en préservant l'approche legacy par scripts personnalisés.
 
-## 🏗️ Architecture Hybride DEV-06
+## 🌟 Nouveautés v2.0 - TeamsFx Integration
 
-### 🔗 **Stratégie de Mutualisation**
+### **🚀 Double Approche de Déploiement**
+```
+┌─ TeamsFx Natif (Recommandé) ──────┐   ┌─ Scripts Legacy (Compatible) ──┐
+│  • Configuration déclarative      │   │  • Scripts Bicep personnalisés  │
+│  • m365agents.dev06.yml          │   │  • Contrôle granulaire          │
+│  • Authentification intégrée      │   │  • deploy-app-dev06.sh          │
+│  • make teamsfx-dev06-full       │   │  • make deploy-dev06-full       │
+└────────────────────────────────────┘   └──────────────────────────────────┘
+```
+
+### **📝 Configuration TeamsFx**
+```
+📁 Configuration TeamsFx
+├── m365agents.dev06.yml          # Déploiement déclaratif
+├── env/.env.dev06               # Variables TeamsFx
+├── .vscode/tasks.json           # Tâches VS Code
+└── .webappignore               # Exclusions déploiement
+```
+
+## 🏗️ Architecture Hybride DEV-06 v2.0
+
+### 🔗 **Stratégie de Mutualisation avec TeamsFx**
 ```
 ┌─ rg-chatbottez-gpt-4-1-dev-06 ────┐   ┌─ rg-cotechnoe-ai-01 (Partagé) ─┐
-│  • PostgreSQL                     │◄──┤  • OpenAI Service (gpt-4o)      │
-│  • App Service                    │   │  • Key Vault (secrets OpenAI)   │
+│  • PostgreSQL                     │◄──┤  • OpenAI Service (gpt-4.1)     │
+│  • App Service (TeamsFx managed)  │   │  • Key Vault (secrets OpenAI)   │
 │  • Key Vault (local)              │   │  • Coût mutualisé               │
 │  • APIM + Monitoring              │   └──────────────────────────────────┘
 │  • Managed Identity               │
-└────────────────────────────────────┘
+│  • TeamsFx App Registration       │   ┌─ Microsoft 365 Services ───────┐
+└────────────────────────────────────┘   │  • Teams App Store             │
+                                         │  • Bot Framework               │
+                                         │  • M365 Admin Center           │
+                                         └──────────────────────────────────┘
 ```
 
-### 👥 **Couche Client** - Microsoft Teams Users
+### 👥 **Couche Client** - Microsoft Teams Users (Inchangée)
 
 #### **Clients Teams Supportés**
 - **Teams Desktop Client** : Application native Windows/Mac
@@ -31,8 +56,9 @@ Ce document présente l'**architecture complète end-to-end** du système ChatBo
 #### **Expérience Utilisateur**
 - **Interface conversationnelle** : Chat naturel avec le bot
 - **Gestion de quota** : Affichage en temps réel (X/300 questions restantes)
-- **Feedback instantané** : Réponses rapides et contextuelles via OpenAI partagé
+- **Feedback instantané** : Réponses rapides via OpenAI partagé (gpt-4.1)
 - **Multi-plateforme** : Expérience cohérente sur tous les appareils
+- **🌟 Prévisualisation TeamsFx** : Test immédiat avec `make teamsfx-preview-dev06`
 
 #### **Intégration Marketplace**
 - **Microsoft Commercial Marketplace** : Modèle SaaS avec abonnement mensuel
@@ -43,11 +69,12 @@ Ce document présente l'**architecture complète end-to-end** du système ChatBo
 
 ---
 
-### 🤖 **Couche Application** - ChatBottez GPT-4.1 Bot (DEV-06)
+### 🤖 **Couche Application** - ChatBottez GPT-4.1 Bot v2.0 (DEV-06)
 
-#### **Bot Framework & Runtime**
+#### **Bot Framework & Runtime avec TeamsFx**
 - **Microsoft Bot Framework** : SDK et services de base
 - **Teams AI Library** : Extensions spécialisées Teams
+- **🌟 TeamsFx Integration** : Gestion automatique des ressources et authentification
 - **Express.js Server** : Runtime Node.js sur port 3978
 - **App Service Plan** : S1 Standard (auto-scaling disponible)
 - **URL** : `https://chatbottez-gpt41-app-{unique}.azurewebsites.net`

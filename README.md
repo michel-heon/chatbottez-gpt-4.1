@@ -1,15 +1,35 @@
-# ChatBottez GPT-4.1 - Teams AI Chatbot with Marketplace Quota Management
+# ChatBottez GPT-4.1 v2.0 - Teams AI Chatbot with Microsoft 365 Agents Toolkit
 
-> **🚀 READY FOR DEPLOYMENT v1.8.0**  
-> **Architecture**: Hybrid DEV-06 with shared OpenAI resources  
-> **Status**: ✅ Infrastructure ready - 🚀 Ready to deploy  
-> **Resource Group**: rg-chatbottez-gpt-4-1-dev-06  
-> **Shared Resources**: rg-cotechnoe-ai-01 (OpenAI + Key Vault)
+> **🌟 NEW v2.0 - TeamsFx Integration**  
+> **Architecture**: Hybrid DEV-06 with dual deployment approach  
+> **Status**: ✅ TeamsFx integrated - 🚀 Ready for native deployment  
+> **Recommended**: `make teamsfx-dev06-full` (TeamsFx native)  
+> **Legacy**: `make deploy-dev06-full` (scripts personnalisés)
 
-This app template is built on top of [Teams AI library](https://aka.ms/teams-ai-library).
+This app template is built on top of [Teams AI library](https://aka.ms/teams-ai-library) and **Microsoft 365 Agents Toolkit**.
 It showcases an agent app that responds to user questions like ChatGPT with **Microsoft Commercial Marketplace integration** and **quota management**. This enables your users to talk with the AI agent in Teams while respecting subscription limits.
 
-## 🎯 **Current Status v1.8.0-step7-dev06-consistency**
+## � **New in v2.0.0-teamsfx-integrated**
+
+### **🚀 Microsoft 365 Agents Toolkit Integration**
+- ✅ **Native TeamsFx deployment** - Official Microsoft method
+- ✅ **Declarative configuration** via `m365agents.dev06.yml`  
+- ✅ **Integrated authentication** Microsoft 365 + Azure
+- ✅ **Instant Teams preview** with `make teamsfx-preview-dev06`
+- ✅ **One-command deployment** with `make teamsfx-dev06-full`
+
+### **🔧 Dual Deployment Approach**
+- 🌟 **TeamsFx Native** (recommended) - `make teamsfx-dev06-full`
+- 🔧 **Custom Scripts** (legacy) - `make deploy-dev06-full`
+
+## �🎯 **Current Status v2.0.0**
+
+### ✅ **TeamsFx Integration Complete**
+- **Configuration**: `m365agents.dev06.yml` + `env/.env.dev06`
+- **Makefile**: 15 new TeamsFx commands integrated
+- **VS Code**: Native tasks for provision/deploy
+- **OpenAI**: Updated to `gpt-4.1` via `openai-cotechnoe.openai.azure.com`
+- **Authentication**: Microsoft 365 integrated login
 
 ### ✅ **Infrastructure Ready (DEV-06)**
 - **Architecture**: Hybrid deployment with resource mutualization
@@ -17,17 +37,34 @@ It showcases an agent app that responds to user questions like ChatGPT with **Mi
 - **Shared OpenAI**: `rg-cotechnoe-ai-01` (cost-optimized)
 - **Bicep Templates**: Complete infrastructure validated
 - **Security**: Dynamic passwords, managed identity ready
-- **Tooling**: Optimized Makefile with env-local-create command
+- **Tooling**: Enhanced Makefile with dual approach
 
-### 🚀 **Ready for Deployment**
+### 🚀 **Ready for Deployment - Choose Your Method**
+
+#### 🌟 **TeamsFx Native (Recommended)**
 ```bash
-# One-command deployment
+# 1. Setup and install TeamsFx
+make setup
+make teamsfx-install
+make teamsfx-login
+
+# 2. One-command native deployment
+make teamsfx-dev06-full
+
+# 3. Test in Teams
+make teamsfx-preview-dev06
+```
+
+#### 🔧 **Legacy Scripts (Compatible)**  
+```bash
+# One-command legacy deployment
 make deploy-dev06-full
 ```
 
 ### 🎯 **Next Steps**
-1. Run deployment: `make deploy-dev06-full`
-2. Configure Bot Framework variables via Azure Portal
+1. **Choose method**: TeamsFx native OR legacy scripts
+2. **Deploy**: Run your chosen deployment command
+3. **Test**: Preview application in Microsoft Teams
 3. Test application functionality
 4. Complete Teams integration
 

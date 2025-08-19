@@ -2,6 +2,7 @@
 env/.env.*.user
 env/.env.local
 env/.env.sandbox
+env/.env.dev06
 .localConfigs
 .localConfigs.playground
 .localConfigs
@@ -29,6 +30,7 @@ lib/
 config/azure.env.local
 env/.env.local.old
 env/.env.local.backup*
+env/.env.dev06*
 *.key
 *.pem
 *.p12
@@ -39,6 +41,15 @@ deployment-outputs.json
 deployment_output_*.json
 temp_*.ps1
 
+# Temporary files and logs
+*.zip
+*.log
+*.tmp
+iisnode.yml
+test-server.js
+BILAN_*.md
+CONFIG_*.md
+
 # IDE
 .vscode/settings.json
 .idea/
@@ -46,3 +57,6 @@ temp_*.ps1
 # Logs
 logs/
 *.log
+/deployments/
+/LogFiles/
+/app-logs.zip

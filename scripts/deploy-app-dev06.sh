@@ -41,11 +41,20 @@ echo "   • Shared OpenAI: openai-cotechnoe (rg-cotechnoe-ai-01)"
 echo ""
 
 # Change to project directory
-cd /mnt/c/01-PROJET-UQAM/00-GIT/GPT-4.1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_DIR"
 
 # Step 1: Build application
 echo "🔨 Step 1: Building application..."
+# Installer toutes les dépendances (tsc est en devDependencies)
+npm ci
 npm run build
+# Option: réduire la taille pour le package final (désactiver si vous développez juste après)
+if [[ "${PRUNE_PROD_ONLY:-1}" == "1" ]]; then
+  echo "🧹 Pruning dev dependencies (npm prune --production)"
+  npm prune --production || true
+fi
 echo "✅ Application built successfully!"
 
 # Step 2: Create deployment package
@@ -59,6 +68,8 @@ mkdir -p deploy
 cp -r lib/* deploy/
 cp package.json deploy/
 cp web.config deploy/
+[ -f iisnode.yml ] && cp iisnode.yml deploy/
+cp -r node_modules deploy/
 
 # Create deployment archive
 cd deploy
@@ -96,16 +107,24 @@ echo "✅ Application deployed successfully!"
 echo "🔑 Step 4: Retrieving OpenAI key from shared resources..."
 
 SHARED_KEY_VAULT="kv-cotechno771554451004"
-OPENAI_KEY=$(az keyvault secret show \
-    --vault-name "$SHARED_KEY_VAULT" \
-    --name "openai-api-key" \
-    --query "value" -o tsv 2>/dev/null)
+OPENAI_KEY=""
+SECRET_USED=""
+# Liste de secrets potentiels (ordre de préférence)
+POSSIBLE_SECRETS=("azure-openai-api-key" "openai-api-key" "azure-openai-key")
+for s in "${POSSIBLE_SECRETS[@]}"; do
+  VAL=$(az keyvault secret show --vault-name "$SHARED_KEY_VAULT" --name "$s" --query "value" -o tsv 2>/dev/null || true)
+  if [[ -n "$VAL" ]]; then
+    OPENAI_KEY="$VAL"
+    SECRET_USED="$s"
+    break
+  fi
+done
 
-if [ -z "$OPENAI_KEY" ]; then
-    echo "⚠️ Could not retrieve OpenAI key from shared Key Vault"
-    echo "   Manual configuration required via Azure Portal"
+if [[ -z "$OPENAI_KEY" ]]; then
+  echo "⚠️ Could not retrieve OpenAI key from shared Key Vault ($SHARED_KEY_VAULT). Tried: ${POSSIBLE_SECRETS[*]}"
+  echo "   Proceeding without storing key (manual step required)."
 else
-    echo "✅ OpenAI key retrieved from shared Key Vault"
+  echo "✅ OpenAI key retrieved from shared Key Vault ($SHARED_KEY_VAULT) secret='$SECRET_USED'"
 fi
 
 # Step 5: Configure environment variables (Attempt via CLI)
@@ -119,27 +138,31 @@ az webapp config appsettings set \
         NODE_ENV="production" \
         AZURE_OPENAI_ENDPOINT="https://openai-cotechnoe.openai.azure.com/" \
         AZURE_OPENAI_DEPLOYMENT_NAME="gpt-4o" \
-        PORT="3978" \
-        DATABASE_URL="postgres://chatbottez_admin:ChatBottez2025!@#@psql-chatbottez-gpt41-dev-${UNIQUE_SUFFIX}.postgres.database.azure.com:5432/marketplace_quota?sslmode=require" \
-    2>/dev/null || echo "⚠️ CLI configuration failed - manual configuration required"
+        PORT="3978" 2>/dev/null || echo "⚠️ CLI configuration failed - manual configuration required"
 
 # Step 6: Store OpenAI key in project Key Vault
-if [ ! -z "$OPENAI_KEY" ]; then
-    echo "🔐 Step 6: Storing OpenAI key in project Key Vault..."
-    
-    # Get the actual Key Vault name
-    ACTUAL_KEY_VAULT=$(az keyvault list --resource-group "$RESOURCE_GROUP" --query "[0].name" -o tsv)
-    
-    if [ ! -z "$ACTUAL_KEY_VAULT" ]; then
-        az keyvault secret set \
-            --vault-name "$ACTUAL_KEY_VAULT" \
-            --name "openai-api-key" \
-            --value "$OPENAI_KEY" \
-            2>/dev/null || echo "⚠️ Failed to store key in project Key Vault"
-        
-        echo "✅ OpenAI key stored in project Key Vault: $ACTUAL_KEY_VAULT"
-    fi
+if [[ -n "$OPENAI_KEY" ]]; then
+  echo "🔐 Step 6: Storing OpenAI key in project Key Vault..."
+  
+  # Get the actual Key Vault name
+  ACTUAL_KEY_VAULT=$(az keyvault list --resource-group "$RESOURCE_GROUP" --query "[0].name" -o tsv)
+  
+  if [ ! -z "$ACTUAL_KEY_VAULT" ]; then
+      az keyvault secret set \
+          --vault-name "$ACTUAL_KEY_VAULT" \
+          --name "azure-openai-key" \
+          --value "$OPENAI_KEY" 2>/dev/null || echo "⚠️ Failed to store key in project Key Vault"
+      
+      echo "✅ OpenAI key stored in project Key Vault: $ACTUAL_KEY_VAULT"
+  fi
 fi
+
+# Ensure AZURE_OPENAI_API_KEY app setting references Key Vault if not already
+KV_URI="https://$ACTUAL_KEY_VAULT.vault.azure.net/secrets/azure-openai-key/"
+az webapp config.appsettings set \
+  --resource-group "$RESOURCE_GROUP" \
+  --name "$ACTUAL_WEB_APP" \
+  --settings AZURE_OPENAI_API_KEY="@Microsoft.KeyVault(SecretUri=$KV_URI)" >/dev/null 2>&1 || true
 
 # Step 7: Test deployment
 echo "🧪 Step 7: Testing deployment..."

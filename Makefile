@@ -3,7 +3,7 @@
 # Orchestration des scripts de déploiement et configuration
 # =================================================================
 
-.PHONY: help setup deploy configure validate clean test-config test-db status status-deployment deploy-dev06 deploy-app-dev06 deploy-dev06-full check-deps all env-local-create
+.PHONY: help setup deploy configure validate clean test-config test-db status status-deployment deploy-dev06 deploy-app-dev06 deploy-dev06-full check-deps all env-local-create bot-credentials-setup-dev06
 
 # Configuration
 SCRIPTS_DIR := scripts
@@ -24,40 +24,75 @@ NC := \033[0m
 help:
 	@echo ""
 	@echo "$(CYAN)=================================================================$(NC)"
-	@echo "$(CYAN)Microsoft Marketplace Quota Management System$(NC)"
+	@echo "$(CYAN)📚 CHATBOTTEZ GPT-4.1 - SYSTÈME DE GESTION$(NC)"
 	@echo "$(CYAN)=================================================================$(NC)"
 	@echo ""
-	@echo "$(YELLOW)🎯 COMMANDES PRINCIPALES:$(NC)"
+	@echo "$(YELLOW)⚡ COMMANDES RAPIDES:$(NC)"
+	@echo "  $(GREEN)make setup$(NC)                     🔧 Configuration initiale complète"
+	@echo "  $(GREEN)make teamsfx-dev06-full$(NC)        🌟 Déploiement complet avec TeamsFx (RECOMMANDÉ)"
+	@echo "  $(GREEN)make deploy-dev06-full$(NC)         � Déploiement complet legacy (scripts personnalisés)"
+	@echo "  $(GREEN)make status$(NC)                    📊 Vérifier l'état du système"
 	@echo ""
-	@echo "  $(GREEN)make setup$(NC)        - 🔧 Configuration initiale complète"
-	@echo "  $(GREEN)make deploy$(NC)       - 🚀 Déploiement Azure infrastructure (legacy)"
-	@echo "  $(GREEN)make deploy-dev06$(NC) - 🆕 Déploiement infrastructure dev-06 (recommandé)"
-	@echo "  $(GREEN)make deploy-app-dev06$(NC) - 🚀 Déployer l'application vers dev-06"
-	@echo "  $(GREEN)make deploy-dev06-full$(NC) - 🎯 Déploiement complet DEV-06 (infra + app)"
-	@echo "  $(GREEN)make configure$(NC)    - ⚙️  Configuration post-déploiement"
-	@echo "  $(GREEN)make validate$(NC)     - ✅ Validation complète du système"
-	@echo "  $(GREEN)make all$(NC)          - 🎉 Processus complet (setup + deploy + configure + validate)"
+	@echo "$(YELLOW)🌟 MICROSOFT 365 AGENTS TOOLKIT (MÉTHODE NATIVE):$(NC)"
+	@echo "  $(GREEN)make teamsfx-install$(NC)           📦 Installer TeamsFx CLI"
+	@echo "  $(GREEN)make teamsfx-login$(NC)             🔐 Se connecter aux services M365"
+	@echo "  $(GREEN)make teamsfx-env-check$(NC)         ✅ Vérifier l'environnement TeamsFx"
+	@echo "  $(GREEN)make teamsfx-build$(NC)             🔨 Construire l'application"
+	@echo "  $(GREEN)make teamsfx-provision-dev06$(NC)   🏗️ Provisionner l'infrastructure"
+	@echo "  $(GREEN)make teamsfx-deploy-dev06$(NC)      🚀 Déployer l'application"
+	@echo "  $(GREEN)make teamsfx-publish-dev06$(NC)     📱 Publier dans Teams"
+	@echo "  $(GREEN)make teamsfx-preview-dev06$(NC)     👀 Prévisualiser dans Teams"
+	@echo "  $(GREEN)make teamsfx-status-dev06$(NC)      📊 Statut de l'application"
+	@echo "  $(GREEN)make teamsfx-logs-dev06$(NC)        📋 Consulter les logs"
+	@echo "  $(GREEN)make teamsfx-clean-dev06$(NC)       🧹 Nettoyer l'environnement"
 	@echo ""
-	@echo "$(YELLOW)🔧 COMMANDES DE DÉVELOPPEMENT:$(NC)"
+	@echo "$(YELLOW)🏗️ CONFIGURATION & ENVIRONNEMENT:$(NC)"
+	@echo "  $(GREEN)make env-local-create$(NC)          🔑 Créer le fichier .env.local automatiquement"
+	@echo "  $(GREEN)make environment$(NC)               🌍 Configuration environnement"
+	@echo "  $(GREEN)make database$(NC)                  💾 Configuration base de données"
+	@echo "  $(GREEN)make marketplace$(NC)               💼 Configuration API Marketplace"
 	@echo ""
-	@echo "  $(GREEN)make env-local-create$(NC) - 🔑 Créer le fichier .env.local automatiquement"
-	@echo "  $(GREEN)make test-config$(NC)  - 🧪 Tester la configuration"
-	@echo "  $(GREEN)make test-db$(NC)      - 💾 Tester la connexion base de données"
-	@echo "  $(GREEN)make status$(NC)       - 📊 Afficher le statut du système"
-	@echo "  $(GREEN)make status-deployment$(NC) - 📊 Vérifier l'état des déploiements"
-	@echo "  $(GREEN)make check-deps$(NC)   - 🔍 Vérifier les dépendances système"
-	@echo "  $(GREEN)make clean$(NC)        - 🧹 Nettoyer les fichiers temporaires"
+	@echo "$(YELLOW)� DÉPLOIEMENT LEGACY (Scripts personnalisés):$(NC)"
+	@echo "  $(GREEN)make deploy$(NC)                    🚀 Déploiement infrastructure Azure"
+	@echo "  $(GREEN)make configure$(NC)                 ⚙️ Configuration post-déploiement"
+	@echo "  $(GREEN)make deploy-dev06$(NC)              🆕 Déploiement infrastructure dev-06"
+	@echo "  $(GREEN)make deploy-app-dev06$(NC)          � Déployer application dev-06"
+	@echo "  $(GREEN)make bot-credentials-setup-dev06$(NC) 🔐 Régénérer credentials Bot (dev-06)"
 	@echo ""
-	@echo "$(YELLOW)ℹ️  PRÉREQUIS:$(NC)"
-	@echo "  - Azure CLI installé et connecté (az login)"
-	@echo "  - Node.js et npm installés"
-	@echo "  - WSL/Bash disponible"
+	@echo "$(YELLOW)✅ VALIDATION & TESTS:$(NC)"
+	@echo "  $(GREEN)make validate$(NC)                  ✅ Validation complète du système"
+	@echo "  $(GREEN)make test-config$(NC)               🧪 Tester la configuration"
+	@echo "  $(GREEN)make test-db$(NC)                   💾 Tester la connexion DB"
+	@echo "  $(GREEN)make check-deps$(NC)                🔍 Vérifier les dépendances"
 	@echo ""
-	@echo "$(YELLOW)💡 DÉPLOIEMENT RECOMMANDÉ:$(NC)"
-	@echo "  0. $(GREEN)make env-local-create$(NC) pour créer la configuration locale"
-	@echo "  1. $(GREEN)make deploy-dev06-full$(NC) pour un déploiement complet"
-	@echo "  2. Configuration manuelle des variables d'environnement via Azure Portal"
-	@echo "  3. $(GREEN)make status$(NC) pour vérifier l'état"
+	@echo "$(YELLOW)📊 MONITORING & DIAGNOSTIC:$(NC)"
+	@echo "  $(GREEN)make status$(NC)                    📊 Statut général du système"
+	@echo "  $(GREEN)make status-deployment$(NC)         📊 État des déploiements Azure"
+	@echo "  $(GREEN)make teamsfx-account-status$(NC)    � Statut des comptes TeamsFx"
+	@echo ""
+	@echo "$(YELLOW)🛠️ UTILITAIRES:$(NC)"
+	@echo "  $(GREEN)make clean$(NC)                     🧹 Nettoyer fichiers temporaires"
+	@echo "  $(GREEN)make scripts-cleanup$(NC)          🧹 Nettoyer scripts obsolètes"
+	@echo "  $(GREEN)make purge-dev06$(NC)               ♻ Purger ressources soft-deleted"
+	@echo ""
+	@echo "$(CYAN)=================================================================$(NC)"
+	@echo "$(YELLOW)💡 WORKFLOW RECOMMANDÉ (Microsoft 365 Agents Toolkit):$(NC)"
+	@echo "$(CYAN)=================================================================$(NC)"
+	@echo "  1. $(GREEN)make setup$(NC)                   # Configuration initiale"
+	@echo "  2. $(GREEN)make teamsfx-install$(NC)         # Installer TeamsFx CLI"
+	@echo "  3. $(GREEN)make teamsfx-login$(NC)           # Se connecter aux services"
+	@echo "  4. $(GREEN)make teamsfx-dev06-full$(NC)      # Déploiement complet"
+	@echo "  5. $(GREEN)make teamsfx-preview-dev06$(NC)   # Tester dans Teams"
+	@echo ""
+	@echo "$(CYAN)=================================================================$(NC)"
+	@echo "$(YELLOW)💡 WORKFLOW LEGACY (Scripts personnalisés):$(NC)"
+	@echo "$(CYAN)=================================================================$(NC)"
+	@echo "  1. $(GREEN)make setup$(NC)                   # Configuration initiale"
+	@echo "  2. $(GREEN)make deploy-dev06-full$(NC)       # Déploiement complet legacy"
+	@echo "  3. $(GREEN)make validate$(NC)                # Validation finale"
+	@echo ""
+	@echo "$(BLUE)📖 Documentation: docs/README.md$(NC)"
+	@echo "$(BLUE)🔧 Aide technique: docs/DEV06_DEPLOYMENT_GUIDE.md$(NC)"
 	@echo ""
 
 ## all: 🎉 Processus de déploiement complet
@@ -234,9 +269,9 @@ marketplace:
 # 🚀 COMMANDES DE DÉPLOIEMENT
 # ==================================================================
 
-## deploy: 🚀 Déploiement de l'infrastructure Azure
+## deploy: 🚀 Déploiement de l'infrastructure Azure (méthode legacy)
 deploy:
-	@echo "$(CYAN)Déploiement de l'infrastructure Azure...$(NC)"
+	@echo "$(CYAN)Déploiement de l'infrastructure Azure (méthode legacy)...$(NC)"
 	@chmod +x $(SCRIPTS_DIR)/azure-deploy.sh
 	@$(SCRIPTS_DIR)/azure-deploy.sh --show-config --create-resource-group
 
@@ -245,6 +280,163 @@ configure:
 	@echo "$(CYAN)Configuration post-déploiement...$(NC)"
 	@chmod +x $(SCRIPTS_DIR)/azure-configure.sh
 	@$(SCRIPTS_DIR)/azure-configure.sh
+
+# ==================================================================
+# 🌟 MICROSOFT 365 AGENTS TOOLKIT - DÉPLOIEMENT NATIF
+# ==================================================================
+
+## teamsfx-env-check: ✅ Vérifier l'environnement TeamsFx
+teamsfx-env-check:
+	@echo "$(CYAN)Vérification de l'environnement Microsoft 365 Agents Toolkit...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🔍 Vérification des fichiers de configuration:$(NC)"
+	@if [ -f "env/.env.dev06" ]; then \
+		echo "  ✅ env/.env.dev06 présent"; \
+		if grep -q "AZURE_OPENAI_API_KEY=" env/.env.dev06 && [ "$$(grep -c '^AZURE_OPENAI_API_KEY=.*[a-zA-Z0-9]' env/.env.dev06)" -gt 0 ]; then \
+			echo "  ✅ Clé API OpenAI configurée"; \
+		else \
+			echo "  ⚠️  Clé API OpenAI non configurée"; \
+		fi; \
+	else \
+		echo "  ❌ env/.env.dev06 manquant"; \
+		exit 1; \
+	fi
+	@if [ -f "m365agents.dev06.yml" ]; then \
+		echo "  ✅ m365agents.dev06.yml présent"; \
+	else \
+		echo "  ❌ m365agents.dev06.yml manquant"; \
+		exit 1; \
+	fi
+	@if [ -f ".vscode/tasks.json" ]; then \
+		echo "  ✅ VS Code tasks configurées"; \
+	else \
+		echo "  ⚠️  VS Code tasks non configurées"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)🛠️  Outils TeamsFx:$(NC)"
+	@if command -v teamsfx >/dev/null 2>&1; then \
+		echo "  ✅ TeamsFx CLI installé"; \
+		teamsfx --version | sed 's/^/    Version: /'; \
+	else \
+		echo "  ❌ TeamsFx CLI manquant"; \
+		echo "    📦 Installation: npm install -g @microsoft/teamsfx-cli"; \
+	fi
+	@echo ""
+
+## teamsfx-build: 🔨 Construire l'application pour TeamsFx
+teamsfx-build:
+	@echo "$(CYAN)Construction de l'application pour TeamsFx...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📦 Installation des dépendances...$(NC)"
+	@npm install || { echo "$(RED)❌ Échec installation npm$(NC)"; exit 1; }
+	@echo ""
+	@echo "$(YELLOW)🔨 Compilation TypeScript...$(NC)"
+	@npm run build || { echo "$(RED)❌ Échec compilation TypeScript$(NC)"; exit 1; }
+	@echo ""
+	@echo "$(YELLOW)✅ Vérification des fichiers de sortie...$(NC)"
+	@if [ -f "lib/src/index.js" ]; then \
+		echo "  ✅ lib/src/index.js généré"; \
+	else \
+		echo "  ❌ lib/src/index.js manquant"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✅ Construction terminée!$(NC)"
+
+## teamsfx-provision-dev06: 🏗️ Provisionner l'infrastructure avec TeamsFx (DEV-06)
+teamsfx-provision-dev06: teamsfx-env-check teamsfx-build
+	@echo "$(CYAN)Provisionnement de l'infrastructure DEV-06 avec TeamsFx...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🏗️ Démarrage du provisionnement...$(NC)"
+	@if command -v teamsfx >/dev/null 2>&1; then \
+		teamsfx provision --env dev06 --verbose || { \
+			echo "$(RED)❌ Échec du provisionnement TeamsFx$(NC)"; \
+			echo "$(YELLOW)💡 Vérifiez vos permissions Microsoft 365$(NC)"; \
+			echo "$(YELLOW)💡 Utilisez: teamsfx account login$(NC)"; \
+			exit 1; \
+		}; \
+	else \
+		echo "$(RED)❌ TeamsFx CLI non installé$(NC)"; \
+		echo "$(YELLOW)📦 Installation: npm install -g @microsoft/teamsfx-cli$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✅ Provisionnement terminé!$(NC)"
+
+## teamsfx-deploy-dev06: 🚀 Déployer l'application avec TeamsFx (DEV-06)
+teamsfx-deploy-dev06: teamsfx-provision-dev06
+	@echo "$(CYAN)Déploiement de l'application DEV-06 avec TeamsFx...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🚀 Démarrage du déploiement...$(NC)"
+	@teamsfx deploy --env dev06 --verbose || { \
+		echo "$(RED)❌ Échec du déploiement TeamsFx$(NC)"; \
+		echo "$(YELLOW)💡 Vérifiez les logs ci-dessus pour plus de détails$(NC)"; \
+		exit 1; \
+	}
+	@echo "$(GREEN)✅ Déploiement terminé!$(NC)"
+
+## teamsfx-publish-dev06: 📱 Publier l'application Teams (DEV-06)
+teamsfx-publish-dev06: teamsfx-deploy-dev06
+	@echo "$(CYAN)Publication de l'application Teams DEV-06...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📱 Publication dans le catalogue Teams...$(NC)"
+	@teamsfx publish --env dev06 --verbose || { \
+		echo "$(RED)❌ Échec de la publication$(NC)"; \
+		echo "$(YELLOW)💡 Vérifiez vos permissions d'administration Teams$(NC)"; \
+		exit 1; \
+	}
+	@echo "$(GREEN)✅ Publication terminée!$(NC)"
+
+## teamsfx-dev06-full: 🎯 Déploiement complet TeamsFx DEV-06 (provision + deploy + publish)
+teamsfx-dev06-full: teamsfx-provision-dev06 teamsfx-deploy-dev06 teamsfx-publish-dev06
+	@echo ""
+	@echo "$(GREEN)🎉 DÉPLOIEMENT TEAMSFX DEV-06 COMPLET TERMINÉ!$(NC)"
+	@echo ""
+	@echo "$(CYAN)🚀 Votre application Microsoft Teams est déployée et publiée!$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Prochaines étapes:$(NC)"
+	@echo "  1. Vérifier l'application: $(GREEN)make teamsfx-status-dev06$(NC)"
+	@echo "  2. Tester dans Microsoft Teams"
+	@echo "  3. Monitorer les logs: $(GREEN)make teamsfx-logs-dev06$(NC)"
+	@echo ""
+
+## teamsfx-status-dev06: 📊 Statut de l'application TeamsFx DEV-06
+teamsfx-status-dev06:
+	@echo "$(CYAN)Statut de l'application TeamsFx DEV-06...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📊 Informations sur l'environnement:$(NC)"
+	@if [ -f "env/.env.dev06" ]; then \
+		echo "  ✅ Configuration DEV-06 présente"; \
+	else \
+		echo "  ❌ Configuration DEV-06 manquante"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)☁️  Ressources Azure:$(NC)"
+	@az group show --name "rg-chatbottez-gpt-4-1-dev-06" --query "{Name:name, Location:location, State:properties.provisioningState}" --output table 2>/dev/null || echo "  ❌ Groupe de ressources non trouvé"
+	@echo ""
+	@echo "$(YELLOW)🚀 Application:$(NC)"
+	@if az webapp show --name "app-chatbottez-gpt-4-1-dev-06" --resource-group "rg-chatbottez-gpt-4-1-dev-06" >/dev/null 2>&1; then \
+		echo "  ✅ App Service actif"; \
+		az webapp show --name "app-chatbottez-gpt-4-1-dev-06" --resource-group "rg-chatbottez-gpt-4-1-dev-06" --query "{Name:name, State:state, URL:defaultHostName}" --output table; \
+	else \
+		echo "  ❌ App Service non trouvé"; \
+	fi
+
+## teamsfx-logs-dev06: 📋 Consulter les logs de l'application DEV-06
+teamsfx-logs-dev06:
+	@echo "$(CYAN)Consultation des logs DEV-06...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📋 Logs récents de l'App Service:$(NC)"
+	@az webapp log tail --name "app-chatbottez-gpt-4-1-dev-06" --resource-group "rg-chatbottez-gpt-4-1-dev-06" || { \
+		echo "$(RED)❌ Impossible de récupérer les logs$(NC)"; \
+		echo "$(YELLOW)💡 Vérifiez que l'application est déployée$(NC)"; \
+	}
+
+## teamsfx-preview-dev06: 👀 Prévisualiser l'application dans Teams
+teamsfx-preview-dev06:
+	@echo "$(CYAN)Prévisualisation de l'application Teams DEV-06...$(NC)"
+	@teamsfx preview --env dev06 || { \
+		echo "$(RED)❌ Échec de la prévisualisation$(NC)"; \
+		echo "$(YELLOW)💡 Assurez-vous que l'application est déployée$(NC)"; \
+	}
 
 # ==================================================================
 # ✅ COMMANDES DE VALIDATION ET TESTS
@@ -256,15 +448,15 @@ validate:
 	@chmod +x $(SCRIPTS_DIR)/deployment-validate.sh
 	@$(SCRIPTS_DIR)/deployment-validate.sh
 
-## deploy-dev06: 🆕 Déploiement infrastructure dev-06 (clean redeploy)
+## deploy-dev06: 🆕 Déploiement infrastructure dev-06 (méthode legacy - scripts personnalisés)
 deploy-dev06:
-	@echo "$(CYAN)Déploiement infrastructure vers dev-06 (redéploiement propre)...$(NC)"
+	@echo "$(CYAN)Déploiement infrastructure vers dev-06 (méthode legacy)...$(NC)"
 	@chmod +x $(SCRIPTS_DIR)/deploy-infrastructure-dev06.sh
 	@$(SCRIPTS_DIR)/deploy-infrastructure-dev06.sh
 
-## deploy-app-dev06: 🚀 Déployer l'application vers dev-06
+## deploy-app-dev06: 🚀 Déployer l'application vers dev-06 (méthode legacy)
 deploy-app-dev06:
-	@echo "$(CYAN)Déploiement de l'application vers dev-06...$(NC)"
+	@echo "$(CYAN)Déploiement de l'application vers dev-06 (méthode legacy)...$(NC)"
 	@chmod +x $(SCRIPTS_DIR)/deploy-app-dev06.sh
 	@$(SCRIPTS_DIR)/deploy-app-dev06.sh
 
@@ -365,10 +557,10 @@ status:
 # 🎛️ COMMANDES AVANCÉES
 # ==================================================================
 
-## deploy-dev06-full: 🎯 Déploiement complet DEV-06 (infrastructure + application)
+## deploy-dev06-full: 🎯 Déploiement complet DEV-06 (infrastructure + application) - MÉTHODE LEGACY
 deploy-dev06-full: deploy-dev06 deploy-app-dev06
 	@echo ""
-	@echo "$(GREEN)🎉 DÉPLOIEMENT COMPLET DEV-06 TERMINÉ!$(NC)"
+	@echo "$(GREEN)🎉 DÉPLOIEMENT COMPLET DEV-06 TERMINÉ! (Méthode Legacy)$(NC)"
 	@echo ""
 	@echo "$(CYAN)🚀 Votre système DEV-06 est maintenant déployé!$(NC)"
 	@echo ""
@@ -377,6 +569,181 @@ deploy-dev06-full: deploy-dev06 deploy-app-dev06
 	@echo "  2. Configurer les variables d'environnement via Azure Portal"
 	@echo "  3. Tester les fonctionnalités Microsoft Teams"
 	@echo ""
+	@echo "$(BLUE)💡 Pour utiliser la méthode native TeamsFx: $(GREEN)make teamsfx-dev06-full$(NC)"
+	@echo ""
+
+# ==================================================================
+# 🌟 MICROSOFT 365 AGENTS TOOLKIT - UTILITAIRES
+# ==================================================================
+
+## teamsfx-install: 📦 Installer TeamsFx CLI
+teamsfx-install:
+	@echo "$(CYAN)Installation de TeamsFx CLI...$(NC)"
+	@npm install -g @microsoft/teamsfx-cli || { \
+		echo "$(RED)❌ Échec de l'installation$(NC)"; \
+		echo "$(YELLOW)💡 Essayez avec sudo: sudo npm install -g @microsoft/teamsfx-cli$(NC)"; \
+		exit 1; \
+	}
+	@echo "$(GREEN)✅ TeamsFx CLI installé!$(NC)"
+	@teamsfx --version
+
+## teamsfx-login: 🔐 Se connecter aux services Microsoft 365
+teamsfx-login:
+	@echo "$(CYAN)Connexion aux services Microsoft 365...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🔐 Connexion Azure...$(NC)"
+	@teamsfx account login azure || { \
+		echo "$(RED)❌ Échec connexion Azure$(NC)"; \
+		exit 1; \
+	}
+	@echo ""
+	@echo "$(YELLOW)🔐 Connexion Microsoft 365...$(NC)"
+	@teamsfx account login m365 || { \
+		echo "$(RED)❌ Échec connexion M365$(NC)"; \
+		echo "$(YELLOW)💡 Vérifiez vos permissions d'administration Teams$(NC)"; \
+		exit 1; \
+	}
+	@echo "$(GREEN)✅ Connexions établies!$(NC)"
+
+## teamsfx-logout: 🚪 Se déconnecter des services
+teamsfx-logout:
+	@echo "$(CYAN)Déconnexion des services...$(NC)"
+	@teamsfx account logout azure
+	@teamsfx account logout m365
+	@echo "$(GREEN)✅ Déconnexion terminée$(NC)"
+
+## teamsfx-account-status: 👤 Vérifier le statut des comptes
+teamsfx-account-status:
+	@echo "$(CYAN)Statut des comptes Microsoft 365 Agents Toolkit...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)☁️  Compte Azure:$(NC)"
+	@teamsfx account show azure || echo "  ❌ Non connecté"
+	@echo ""
+	@echo "$(YELLOW)🏢 Compte Microsoft 365:$(NC)"
+	@teamsfx account show m365 || echo "  ❌ Non connecté"
+
+## teamsfx-clean-dev06: 🧹 Nettoyer l'environnement TeamsFx DEV-06
+teamsfx-clean-dev06:
+	@echo "$(CYAN)Nettoyage de l'environnement TeamsFx DEV-06...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)⚠️  Cette action va supprimer les ressources DEV-06$(NC)"
+	@read -p "Continuer? (y/N): " confirm; \
+	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
+		echo "$(CYAN)🧹 Suppression des ressources...$(NC)"; \
+		az group delete --name "rg-chatbottez-gpt-4-1-dev-06" --yes --no-wait || echo "$(YELLOW)⚠️  Groupe de ressources non trouvé$(NC)"; \
+		echo "$(GREEN)✅ Nettoyage initié$(NC)"; \
+	else \
+		echo "$(YELLOW)❌ Nettoyage annulé$(NC)"; \
+	fi
+
+## teamsfx-env-create-dev06: 📝 Créer la configuration d'environnement DEV-06
+teamsfx-env-create-dev06:
+	@echo "$(CYAN)Création de la configuration d'environnement DEV-06...$(NC)"
+	@if [ ! -f "env/.env.dev06" ]; then \
+		echo "$(YELLOW)📝 Création du fichier env/.env.dev06...$(NC)"; \
+		mkdir -p env; \
+		printf '%s\n' \
+			'# =================================================================' \
+			'# Microsoft 365 Agents Toolkit - Configuration DEV-06' \
+			'# =================================================================' \
+			'# ⚠️ IMPORTANT: Ce fichier contient des secrets - Ne jamais commiter !' \
+			"# Généré automatiquement le $$(date '+%Y-%m-%d %H:%M:%S')" \
+			'' \
+			'# =================================================================' \
+			'# TeamsFx Environment Configuration' \
+			'# =================================================================' \
+			'TEAMSFX_ENV=dev06' \
+			'APP_NAME_SUFFIX=dev06' \
+			'' \
+			'# =================================================================' \
+			'# Azure OpenAI Configuration (Partagé)' \
+			'# =================================================================' \
+			'AZURE_OPENAI_API_KEY=to-be-filled-manually' \
+			'AZURE_OPENAI_ENDPOINT=https://openai-shared-canada-central.openai.azure.com/' \
+			'AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4' \
+			'AZURE_OPENAI_API_VERSION=2024-02-15-preview' \
+			'' \
+			'# =================================================================' \
+			'# Azure Configuration (Auto-filled by TeamsFx)' \
+			'# =================================================================' \
+			'AZURE_SUBSCRIPTION_ID=to-be-filled-by-teamsfx' \
+			'AZURE_RESOURCE_GROUP_NAME=rg-chatbottez-gpt-4-1-dev-06' \
+			'AZURE_LOCATION=Canada Central' \
+			'' \
+			'# =================================================================' \
+			'# Bot Configuration (Auto-filled by TeamsFx)' \
+			'# =================================================================' \
+			'BOT_ID=to-be-filled-by-teamsfx' \
+			'BOT_PASSWORD=to-be-filled-by-teamsfx' \
+			'TEAMS_APP_ID=to-be-filled-by-teamsfx' \
+			'BOT_ENDPOINT=to-be-filled-by-teamsfx' \
+			'BOT_DOMAIN=to-be-filled-by-teamsfx' \
+			'' \
+			'# =================================================================' \
+			'# Application Configuration' \
+			'# =================================================================' \
+			'PORT=3978' \
+			'NODE_ENV=production' \
+			'LOG_LEVEL=info' \
+			> env/.env.dev06; \
+		echo "$(GREEN)✅ Fichier env/.env.dev06 créé$(NC)"; \
+		echo "$(YELLOW)⚠️  N'oubliez pas de configurer AZURE_OPENAI_API_KEY$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Le fichier env/.env.dev06 existe déjà$(NC)"; \
+	fi
+	@if [ ! -f "m365agents.dev06.yml" ]; then \
+		echo "$(YELLOW)📝 Création du fichier m365agents.dev06.yml...$(NC)"; \
+		printf '%s\n' \
+			'# =================================================================' \
+			'# Microsoft 365 Agents Toolkit - Configuration de déploiement DEV-06' \
+			'# =================================================================' \
+			'# Fichier de configuration TeamsFx pour l'"'"'environnement DEV-06' \
+			'# =================================================================' \
+			'' \
+			'version: 2.0.0' \
+			'' \
+			'environmentFolderPath: ./env' \
+			'' \
+			'provision:' \
+			'  - uses: teamsApp/create' \
+			'    with:' \
+			'      name: ChatBottez-GPT-4.1-DEV-06' \
+			'    writeToEnvironmentFile:' \
+			'      teamsAppId: TEAMS_APP_ID' \
+			'' \
+			'  - uses: arm/deploy' \
+			'    with:' \
+			'      subscriptionId: $${{AZURE_SUBSCRIPTION_ID}}' \
+			'      resourceGroupName: rg-chatbottez-gpt-4-1-dev-06' \
+			'      templates:' \
+			'        - path: ./infra/complete-infrastructure-dev06.bicep' \
+			'          parameters: ./infra/complete-infrastructure-dev06.parameters.json' \
+			'          deploymentName: chatbottez-infrastructure-dev06' \
+			'      bicepCliVersion: v0.15.31' \
+			'' \
+			'deploy:' \
+			'  - uses: azureAppService/zipDeploy' \
+			'    with:' \
+			'      artifactFolder: .' \
+			'      ignoreFile: .webappignore' \
+			'      resourceId: $${{AZURE_APP_SERVICE_RESOURCE_ID}}' \
+			> m365agents.dev06.yml; \
+		echo "$(GREEN)✅ Fichier m365agents.dev06.yml créé$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Le fichier m365agents.dev06.yml existe déjà$(NC)"; \
+	fi
+
+## purge-dev06: ♻ Purger ressources soft-deleted (APIM / KeyVault) pour DEV-06
+purge-dev06:
+	@echo "$(CYAN)Purge soft-deleted ressources DEV-06...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/purge-infra-dev-06.sh
+	@$(SCRIPTS_DIR)/purge-infra-dev-06.sh --auto
+
+## bot-credentials-setup-dev06: 🔐 Régénérer et configurer les identifiants Bot (App Registration) pour DEV-06
+bot-credentials-setup-dev06:
+	@echo "$(CYAN)Reset & configuration des credentials Bot (dev-06)...$(NC)"
+	@chmod +x $(SCRIPTS_DIR)/bot-credentials-setup-dev06.sh
+	@$(SCRIPTS_DIR)/bot-credentials-setup-dev06.sh || { echo "$(RED)Échec génération credentials Bot$(NC)"; exit 1; }
 
 ## check-deps: 🔍 Vérifier les dépendances
 check-deps:

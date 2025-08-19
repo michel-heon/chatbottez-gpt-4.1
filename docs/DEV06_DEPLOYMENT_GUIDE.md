@@ -1,13 +1,36 @@
-# 🎯 Guide de Déploiement DEV-06 - Architecture Hybride
+# 🎯 Guide de Déploiement DEV-06 - Architecture Hybride avec TeamsFx
 
 ## 📋 Vue d'ensemble
 
-**Version :** v1.8.0-step7-dev06-consistency  
-**Architecture :** Hybride avec mutualisation des ressources OpenAI  
+**Version :** v2.0.0-teamsfx-integrated  
+**Architecture :** Hybride avec mutualisation des ressources OpenAI et double approche de déploiement  
 **Resource Group Cible :** `rg-chatbottez-gpt-4-1-dev-06`  
 **Ressources Partagées :** `rg-cotechnoe-ai-01`
 
-## 🏗️ Architecture Déployée
+## � Choix de la Méthode de Déploiement
+
+### 🌟 **Méthode 1 : TeamsFx Natif (RECOMMANDÉE)**
+- ✅ Déploiement déclaratif via `m365agents.dev06.yml`
+- ✅ Authentification intégrée Microsoft 365
+- ✅ Gestion automatique des ressources Azure et Teams
+- ✅ Prévisualisation immédiate dans Teams
+- ✅ Configuration simplifiée
+
+### 🔧 **Méthode 2 : Scripts Personnalisés (Legacy)**
+- ✅ Contrôle granulaire du déploiement
+- ✅ Scripts Bicep personnalisés
+- ✅ Compatible avec l'existant
+- ✅ Débogage avancé
+
+## �🏗️ Architecture Déployée
+
+### **Configuration TeamsFx**
+```
+📝 Configuration TeamsFx
+├── m365agents.dev06.yml (Déploiement déclaratif)
+├── env/.env.dev06 (Variables d'environnement)
+└── .vscode/tasks.json (Tâches VS Code intégrées)
+```
 
 ### **Ressources Créées (Nouvelles)**
 ```
@@ -25,13 +48,65 @@
 ### **Ressources Partagées (Mutualisées)**
 ```
 📦 rg-cotechnoe-ai-01
-├── 🤖 OpenAI Service (openai-cotechnoe) - gpt-4o
+├── 🤖 OpenAI Service (openai-cotechnoe) - gpt-4.1
 └── 🔐 Key Vault Partagé (kv-cotechno771554451004)
 ```
 
 ## 🚀 Guide de Déploiement
 
-### **Étape 1 : Préparation**
+### **🌟 MÉTHODE 1 : TeamsFx Natif (Recommandée)**
+
+#### **Étape 1 : Préparation TeamsFx**
+```bash
+# 1. Vérifier l'état du système
+make status
+
+# 2. Créer la configuration locale (si pas déjà fait)
+make setup
+
+# 3. Installer TeamsFx CLI
+make teamsfx-install
+
+# 4. Vérifier l'environnement TeamsFx
+make teamsfx-env-check
+```
+
+#### **Étape 2 : Authentification**
+```bash
+# Se connecter aux services Microsoft 365 et Azure
+make teamsfx-login
+
+# Vérifier le statut des connexions
+make teamsfx-account-status
+```
+
+#### **Étape 3 : Déploiement Complet TeamsFx**
+```bash
+# Déploiement complet en une commande
+make teamsfx-dev06-full
+
+# OU étape par étape :
+# make teamsfx-build              # Construction
+# make teamsfx-provision-dev06    # Provisionnement infrastructure
+# make teamsfx-deploy-dev06       # Déploiement application
+# make teamsfx-publish-dev06      # Publication dans Teams
+```
+
+#### **Étape 4 : Test et Validation**
+```bash
+# Prévisualiser dans Teams
+make teamsfx-preview-dev06
+
+# Vérifier le statut
+make teamsfx-status-dev06
+
+# Consulter les logs
+make teamsfx-logs-dev06
+```
+
+### **🔧 MÉTHODE 2 : Scripts Legacy (Compatible)**
+
+#### **Étape 1 : Préparation Legacy**
 ```bash
 # 1. Vérifier l'état du système
 make status
@@ -43,10 +118,14 @@ make env-local-create
 az account show
 ```
 
-### **Étape 2 : Déploiement Complet**
+#### **Étape 2 : Déploiement Complet Legacy**
 ```bash
 # Déploiement infrastructure + application
 make deploy-dev06-full
+
+# OU étape par étape :
+# make deploy-dev06        # Infrastructure seulement
+# make deploy-app-dev06    # Application seulement
 ```
 
 Cette commande exécute automatiquement :
@@ -177,5 +256,5 @@ En cas de problème :
 
 ---
 
-**Documentation générée pour v1.8.0-step7-dev06-consistency**  
+**Documentation générée pour v1.9.0-dev06-align**  
 **Dernière mise à jour :** Août 18, 2025

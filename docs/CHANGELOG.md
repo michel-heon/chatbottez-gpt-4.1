@@ -1,5 +1,89 @@
 # CHANGELOG - Mises à jour Documentation
 
+## [2025-08-19] - v2.0.0 Intégration Microsoft 365 Agents Toolkit
+
+### 🌟 **NOUVEAUTÉ MAJEURE : TeamsFx Intégré**
+
+#### Microsoft 365 Agents Toolkit
+- **TeamsFx CLI intégration** : Déploiement natif Microsoft 365 (`@microsoft/teamsfx-cli`)
+- **Configuration déclarative** : `m365agents.dev06.yml` pour le déploiement
+- **Variables d'environnement TeamsFx** : `env/.env.dev06` avec OpenAI configuré
+- **Authentification intégrée** : Connexion automatique Azure + Microsoft 365
+- **Prévisualisation Teams** : Test immédiat dans l'interface Teams
+
+#### Makefile v2.0 - Double Approche
+- **15 nouvelles commandes TeamsFx** : `teamsfx-*` pour méthode native
+- **Workflow complet** : `make teamsfx-dev06-full` (provision + deploy + publish)
+- **Vérifications automatiques** : `make teamsfx-env-check` validation environnement
+- **Préservation legacy** : Toutes les commandes existantes maintenues
+- **Documentation intégrée** : Aide contextuelle mise à jour
+
+#### Configuration VS Code
+- **Tâches TeamsFx** : `.vscode/tasks.json` avec support DEV-06
+- **Déploiement natif** : "Deploy to DEV-06 (Native)" 
+- **Support environnements** : playground, sandbox, local
+
+### ✅ Ajouté
+
+#### Nouveaux documents
+- **MAKEFILE_TEAMSFX_INTEGRATION.md** : Guide complet intégration TeamsFx
+- **Configuration TeamsFx** : Fichiers `m365agents.dev06.yml` et `env/.env.dev06`
+- **Support VS Code** : Tâches TeamsFx intégrées
+
+#### Nouvelles commandes Makefile
+```bash
+# Installation et configuration
+make teamsfx-install              # Installation TeamsFx CLI
+make teamsfx-login               # Authentification M365/Azure
+make teamsfx-env-check           # Vérification environnement
+
+# Déploiement TeamsFx
+make teamsfx-dev06-full          # Déploiement complet (RECOMMANDÉ)
+make teamsfx-provision-dev06     # Provisionnement infrastructure
+make teamsfx-deploy-dev06        # Déploiement application
+make teamsfx-publish-dev06       # Publication Teams
+
+# Monitoring et utilitaires  
+make teamsfx-status-dev06        # Statut application
+make teamsfx-logs-dev06          # Logs en temps réel
+make teamsfx-preview-dev06       # Prévisualisation Teams
+make teamsfx-clean-dev06         # Nettoyage environnement
+```
+
+### ✅ Modifié
+
+#### Documentation mise à jour
+- **README.md** : Section TeamsFx ajoutée, workflow recommandé v2.0
+- **STATUS.md** : État v2.0.0 avec composants TeamsFx, double approche
+- **DEV06_DEPLOYMENT_GUIDE.md** : Choix méthode TeamsFx vs Legacy
+- **MAKEFILE_GUIDE.md** : Guide v2.0 avec nouvelles commandes
+
+#### Configuration
+- **OpenAI Endpoint** : Mise à jour `openai-cotechnoe.openai.azure.com`
+- **Modèle** : `gpt-4.1` au lieu de `gpt-4o`
+- **Variables d'environnement** : Configuration TeamsFx native
+
+### 🔄 **Double Approche Déploiement**
+
+#### 🌟 TeamsFx Natif (Recommandé)
+- Méthode officielle Microsoft 365 Agents Toolkit
+- Configuration déclarative et automatisation complète
+- Authentification et gestion de secrets intégrée
+- Commande : `make teamsfx-dev06-full`
+
+#### 🔧 Scripts Legacy (Maintenu)
+- Scripts Bicep personnalisés préservés
+- Contrôle granulaire du déploiement  
+- Compatible avec configuration existante
+- Commande : `make deploy-dev06-full`
+
+### 📊 Compatibilité et Migration
+
+- **Rétrocompatibilité** : Toutes les commandes legacy préservées
+- **Migration progressive** : Possibilité de tester TeamsFx sans impact
+- **Documentation** : Guides pour les deux approches
+- **Configuration** : Fichiers séparés (`.env.local` vs `.env.dev06`)
+
 ## [2025-08-17] - Standardisation et Documentation Complète
 
 ### ✅ Ajouté
