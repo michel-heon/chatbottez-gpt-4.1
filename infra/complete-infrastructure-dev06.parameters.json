@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceBaseName": {
+      "value": "chatbottez-gpt-4-1"
+    },
+    "environment": {
+      "value": "dev-06"
+    },
+    "location": {
+      "value": "East US"
+    },
+    "publisherEmail": {
+      "value": "admin@example.com"
+    },
+    "publisherName": {
+      "value": "ChatBottez Publisher"
+    },
+    "postgresAdminLogin": {
+      "value": "chatbottezadmin"
+    },
+    "postgresAdminPassword": {
+      "value": "${{SECRET_POSTGRES_ADMIN_PASSWORD}}"
+    },
+    "openAiApiKey": {
+      "value": "${{SECRET_OPENAI_API_KEY}}"
+    },
+    "appServiceSku": {
+      "value": "B1"
+    },
+    "postgresqlSku": {
+      "value": "B_Standard_B1ms"
+    }
+  }
+}

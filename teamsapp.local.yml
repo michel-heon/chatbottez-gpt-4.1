@@ -1,7 +1,7 @@
-# yaml-language-server: $schema=https://aka.ms/teams-toolkit/v1.8/yaml.schema.json
+# yaml-language-server: $schema=https://aka.ms/teams-toolkit/1.0.0/yaml.schema.json
 # Visit https://aka.ms/teamsfx-v5.0-guide for details on this file
 # Visit https://aka.ms/teamsfx-actions for details on actions
-version: v1.8
+version: 1.0.0
 
 environmentFolderPath: ./env
 
@@ -38,7 +38,7 @@ provision:
           parameters: ./infra/azure.parameters.json
           # Required when deploying ARM template
           deploymentName: Create-resources-for-bot-dev06
-      # Microsoft 365 Agents Toolkit will download this bicep CLI version from github for you,
+      # Teams Toolkit will download this bicep CLI version from github for you,
       # will use bicep CLI in PATH if you remove this config.
       bicepCliVersion: v0.9.1
 
@@ -47,18 +47,16 @@ provision:
     with:
       # Path to manifest template
       manifestPath: ./appPackage/manifest.json
+
   # Build app package with latest env value
   - uses: teamsApp/zipAppPackage
     with:
       # Path to manifest template
       manifestPath: ./appPackage/manifest.json
+      # Path to app package output
       outputZipPath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
-      outputFolder: ./appPackage/build
-  # Validate app package using validation rules
-  - uses: teamsApp/validateAppPackage
-    with:
-      # Relative path to this file. This is the path for built zip file.
-      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+      # Path to app package output
+      outputJsonPath: ./appPackage/build/manifest.${{TEAMSFX_ENV}}.json
 
 # Triggered when 'teamsapp deploy' is executed
 deploy:
@@ -97,8 +95,10 @@ publish:
     with:
       # Path to manifest template
       manifestPath: ./appPackage/manifest.json
+      # Path to app package output
       outputZipPath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
-      outputFolder: ./appPackage/build
+      # Path to app package output
+      outputJsonPath: ./appPackage/build/manifest.${{TEAMSFX_ENV}}.json
   # Validate app package using validation rules
   - uses: teamsApp/validateAppPackage
     with:
