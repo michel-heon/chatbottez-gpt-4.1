@@ -22,3 +22,7 @@ lib/
 
 # Dev tool directories
 /devTools/
+
+# Backup directories
+backup-*/
+.project
